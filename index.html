@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>sp-worker help</title>
+
+		<style type="text/css">
+			ol {list-style-type: none;}
+			li {margin: 10px 0px;}
+		</style>
+
+	</head>
+	<body>
+		<div style="width: 320px;height: 100%;position: fixed;overflow: auto;">
+			<a href="#c1">1. 安装和使用VSoc软件集成开发环境(IDE)</a>
+				<ol>
+					<li><a href="#install">1.1 安装软件</a></li>
+					<li><a href="#startup">1.2 新建工程</a></li>
+					<li><a href="#edit">1.3 编辑源码</a></li>
+					<li><a href="#compile">1.4 运行应用程序</a></li>
+					<li><a href="#monitor">1.5 监控VSoc状态</a></li>
+					<li><a href="#peripheral">1.6 虚拟外设VPeripherial</a></li>
+					<li><a href="#settings">1.7 设置VSoc设备初始状态</a></li>
+				</ol>
+			<a href="#c2">2. VSoc类型说明</a>
+				<ol></ol>
+			<a href="#c3">3. VSoc应用软件编程</a>
+				<ol>
+					<li><a href="#vsoc_model">3.1 VSoc编程模型</a></li>
+					<ol>
+						<li><a href="#vsoc_model_overview">3.1.1 简介</a></li>
+						<li><a href="#vsoc_model_lib_header">3.1.2 库及头文件</a></li>
+						<li><a href="#vsoc_model_log">3.1.3 log输出</a></li>
+						<li><a href="#vsoc_model_device">3.1.4 硬件访问模型</a></li>
+						<li><a href="#vsoc_model_interrupt_api">3.1.5 中断访问API</a></li>
+						<li><a href="#vsoc_model_device_api">3.1.6 外设访问API</a></li>
+						<li><a href="#vsoc_model_program">3.1.7 单任务前后台编程模型</a></li>
+					</ol>
+					<li><a href="#vsoc_device">3.2 VSoc设备编程</a></li>
+					<ol>
+						<li><a href="#vsoc_device_timer">3.2.1 TIMER</a></li>
+						<li><a href="#vsoc_device_gpio">3.2.2 GPIO</a></li>
+						<li><a href="#vsoc_device_uart">3.2.3 UART</a></li>
+						<li><a href="#vsoc_device_flash">3.2.4 DATA FLASH</a></li>
+						<li><a href="#vsoc_device_wdt">3.2.5 WATCHDOG</a></li>
+						<li><a href="#vsoc_device_adc">3.2.6 ADC</a></li>
+						<li><a href="#vsoc_device_pwm">3.2.7 PWM</a></li>
+						<li><a href="#vsoc_device_rtc">3.2.8 RTC</a></li>
+						<li><a href="#vsoc_device_i2c">3.2.9 I2C</a></li>
+						<li><a href="#vsoc_device_spi">3.2.10 SPI</a></li>
+						<li><a href="#vsoc_device_ota">3.2.11 OTA升级</a></li>
+						<li><a href="#vsoc_device_pm">3.2.12 电源管理</a></li>
+						<li><a href="#vsoc_device_net">3.2.13 蜂窝通信网络设备</a></li>
+						<li><a href="#vsoc_device_fs">3.2.14 文件系统</a></li>
+						<li><a href="#vsoc_device_task">3.2.15 基础任务管理</a></li>
+					</ol>
+				</ol>
+		</div>
+
+		<div style="margin-left: 320px;padding: 1px 16px;height: 100%;overflow: auto;">
+
+			<div>
+				<h1 id="c1">1. 安装和使用VSoc软件集成开发环境(IDE)</h1>
+				<h2 id="install">1.1 安装软件</h2>
+					<div>
+						<h3>1.1.1 硬件需求</h3>
+						<ul>
+							<li>CPU: >= 4核 64位</li>
+							<li>RAM: >= 4GB</li>
+							<li>硬盘: >= 20GB</li>
+							<li>显示分辨率: >= 1600 x 900</li>
+							<p style="color: red;">若在虚拟机中安装,请注意设置虚拟机的USB控制器为3.x版本</p>
+						</ul>
+						<h3>1.1.2 系统软件版本需求</h3>
+						<ul>
+							<li>OS: Ubuntu 22.04.1 LTS 64位版本, 安装时可选择"Minimal installation"</li>
+							<li>clangd (>= 13.0.0)</li>
+							<li>make (>= 4.3)</li>
+							<li>gcc (>= 11.2.0)</li>
+						</ul>
+						<h3>1.1.3 安装基础软件</h3>
+							sudo apt install net-tools vim clangd build-essential libmad0
+						<h3>1.1.4 安装集成软件开发环境(IDE)</h3>
+						<ol>
+							<li>A. <a href="download/sp-worker_v1.03.0.rc.1.gf46651e_amd64.deb">下载</a>: wget http://120.76.158.241/download/sp-worker_v1.03.0.rc.1.gf46651e_amd64.deb</li>
+							<li>B. 安装: sudo dpkg -i sp-worker_v1.03.0.rc.1.gf46651e_amd64.deb</li>
+							<li>C. 启动: 在控制台中直接运行sp-worker,或打开桌面左下角"show Applications", 找到"SP IDE"图标单击启动应用</li>
+						</ol>
+						<h3>1.1.5 卸载IDE</h3>
+							sudo dpkg -P sp-worker
+						<h3>1.1.6 更新IDE</h3>
+							请先卸载IDE,再重新安装。
+					</div>
+				<h2 id="startup">1.2 新建工程</h2>
+					<div>
+						<h3>1.2.1 通过菜单创建新工程</h3>
+							<p>工程->创建->输入"工程名称"->选择<a href="#c2">VSOC类型</a>->确定。</p>
+							<p>新建工程后,示例代码main.c自动加入工程,用户可以参考设计。用户可以通过左侧文件浏览器删除示例代码。</p>
+							<p>系统提供了用户编程接口文件sp_raw.h,以及常用C库头文件。这些文件自动加入工程,用户不可删除,不可修改,用户应用程序可以根据编程指导调用文件中的接口。</p>
+						<h3>1.2.2 工程目录</h3>
+							<p>软件默认在$HOME目录下创建sp-worker-workspace工作区目录,新建的工程都放在该目录之下。例如,新建的工程名称为test,则工程文件都放在"$HOME/sp-worker-workspace/test"目录下。</p>
+							<p>当前只支持一次打开一个工程。</p>
+						<div style="color: blue;">
+						<h3>1.2.3 导入/导出工程</h3>
+							<p>可以将现有工程导出,保存为独立的工程打包文件;可以将工程打包文件导入为工程,导入时可以重新命名工程名称。</p>
+						</div>
+						<h3>1.2.4 导入文件</h3>
+							<p><del style="color: blue;">可以参考导入文件夹的方法导入文件,也可以</del>在文件浏览器中通过右键菜单"导入文件"<del style="color: blue;">实现</del>。</p>
+					</div>
+				<h2 id="edit">1.3 编辑源码</h2>
+					<div>
+						<h3>1.3.1 编辑视图界面</h3>
+							<img src="images/editor_view2.png">
+						<h3>1.3.2 文件浏览</h3>
+							<p>左上窗口为文件浏览区,通过鼠标双击可以打开文件;通过鼠标悬停或单击左侧箭头可以展开目录,再次悬停或单击箭头可以折叠目录。</p>
+						<h3>1.3.3 文件编辑</h3>
+							<p>右侧为编辑区域,支持以下特性:</p>
+							<ul>
+								<li>支持语法高亮</li>
+								<li>支持自动语法诊断</li>
+								<li>支持编辑自动完成</li>
+								<li>支持符号跳转(定义/引用)</li>
+								<li>支持返回页面</li>
+								<li>支持查找</li>
+							</ul>
+						<h3>1.3.4 符号表浏览</h3>
+							<p>左下窗口为符号表浏览区,将显示当前打开文件的变量和函数清单。通过鼠标双击,可以跳转到符号定义行。</p>
+						<h3>1.3.5 编译</h3>
+							<p>在编辑源码阶段,可以通过菜单"工程->编译"检查当前代码是否存在错误。</p>
+					</div>
+				<h2 id="compile">1.4 运行应用程序</h2>
+					<div>
+						完成应用程序编码后,可以在IDE集成的VSoc中运行应用程序。
+						<h3>1.4.1 切换视图</h3>
+							<p>通过工具栏图标可以在3个视图中快捷切换:</p>
+							<ol>
+								<li><img src="images/edit.png"> 编辑视图</li>
+								<li><img src="images/simulator.png"> 虚拟机视图</li>
+								<li><img src="images/target.png"> 目标板视图</li>
+							</ol>
+							<p>点击"虚拟机视图"后,软件切换到内置的VSoc运行环境界面</p>
+							<img src="images/vsoc_view2.png">
+						<h3>1.4.2 运行和停止</h3>
+							<p>点击右上窗口中的"连接"按钮,IDE将连接VSoc;点击"下载"按钮,将编译工程,若编译成功则将用户程序下载至VSoc运行环境;点击"运行"按钮,应用程序将开始运行。</p>
+							<p>运行后,用户可以监控软件运行数据和状态。</p>
+							<p>IDE支持部分模块(例如UART/GPIO/ADC)的外部模拟输入,详情请参考各模块的监控页面。</p>
+							<p>运行后,点击"停止"按钮,应用程序将停止运行。</p>
+						<h3>1.4.2 调试</h3>
+							<p>点击右上窗口中的"调试"按钮,应用程序将进入调试模式。</p>
+							<img src="images/debug2.png">
+							<p>停止或运行状态,都可以直接进入调试模式。</p>
+							<p>调试模式支持以下特性:</p>
+							<ul>
+								<li>支持断点</li>
+								<li>支持单步/运行</li>
+								<li>支持变量观察</li>
+								<li>支持表达式观察</li>
+								<li>支持运行状态下的状态监控</li>
+							</ul>
+							<p>点击"quit"按钮,将退出调试模式,返回到进入调试模式之前的运行或停止状态。</p>
+					</div>
+				<h2 id="monitor">1.5 监控VSoc状态</h2>
+					<div>
+						<ul>
+							<li>监控标准输出</li>
+							<img src="images/monitor_stdout.png">
+							<li>监控UART状态</li>
+							<img src="images/monitor_uart2.png">
+							<li>监控与Modem通信的UART状态</li>
+							<img src="images/monitor_modem2.png">
+							<li>监控GPIO状态</li>
+							<img src="images/monitor_gpio2.png">
+							<li>监控TIMER状态</li>
+							<img src="images/monitor_timer2.png">
+							<li>监控数据FLASH状态</li>
+							<img src="images/monitor_flash2.png">
+							<li>监控ADC状态</li>
+							<img src="images/monitor_adc2.png">
+						</ul>
+					</div>
+				<h2 id="peripheral">1.6 虚拟外设VPeripherial</h2>
+					<div>
+						<p>虚拟外设以内置或插件形式集成在IDE中,应用程序可以与虚拟外设交互。</p>
+						<p>应用程序、VSoc、虚拟外设的关系如下图:</p>
+						<img src="images/blocks.png">
+						<p>通过菜单 工程--><span style="color: blue;">硬件</span>设置 可以进行虚拟外设的连接配置。默认情况下,只有一个VSOC主芯片,其规格与创建工程时指定的规格型号一致。</p>
+						<p>设置界面基本操作:</p>
+						<ul>
+							<li>移动</li>
+							<p>鼠标左键拖拽可移动虚拟外设</p>
+							<li>添加</li>
+							<p>空白处右键菜单可添加虚拟外设</p>
+							<li>移除</li>
+							<p>虚拟外设上右键菜单可移除该虚拟外设</p>
+							<li>配置</li>
+							<p>若适用,虚拟外设上右键菜单可设置上电初始状态</p>
+							<li>连接</li>
+							<p>鼠标左键点击虚拟外设上连接点(带信号名称的圆点),根据提示进行连接。连接过程中,通过左键单击可创建折线路径,通过右键单击可取消上一个连接路径</p>
+							<li>删除连接</li>
+							<p>鼠标左键点击虚拟外设上连接点(带信号名称的圆点),连续右键单击可删除连接</p>
+						</ul>
+						<p>参考虚拟外设连接如下图:</p>
+						<img src="images/connect.png">
+						<ul>
+							<li>虚拟AT Modem</li>
+							功能内置,无输入接口。
+							<li>虚拟UART外设-串口助手</li>
+							<p>可以输入数据,发送给VSoc的UART。</p>
+							<img src="images/vperiph_uart2.png">
+							<li>虚拟UART外设-GNSS</li>
+							<p>功能内置,无输入接口</p>
+							<img src="images/vperiph_gnss.png">
+							<li>虚拟GPIO外设-按键/LED</li>
+							<p>工作于输入模式的GPIO,通过"翻转"操作,可以改变GPIO输入口线状态。</p>
+							<img src="images/vperiph_gpio2.png">
+							<li>虚拟ADC外设-线性电压采样器</li>
+							<p>在ADC监控界面,输入的电压值,经过线性采样后发送给VSoc的ADC。</p>
+							<img src="images/vperiph_adc2.png">
+							<li>虚拟I2C设备-GSensor</li>
+							<img src="images/vperiph_gsensor.png">
+						</ul>
+					</div>
+				<h2 id="settings">1.7 设置VSoc设备初始状态</h2>
+					<div>
+						<p>在设置视图中,通过虚拟外设右键菜单进行初始状态设置</p>
+					</div>
+			</div>
+
+			<div>
+				<h1 id="c2">2. VSOC类型说明</h1>
+				<ul>
+					<li>类型命名规则</li>
+						<p>SPVSOC-<宿主机类型><内置设备类型><计算核心类型><外设类型>-<版本></p>
+					<li>命名规范</li>
+						<p>名字以 字母、数字、- 作为命名字符</p>
+					<li id="c2-host">宿主机类型</li>
+						<table border="1" cellpadding="10" cellspacing="0">
+							<thead>
+								<tr align="center">
+									<th>序号</th>
+									<th>名字</th>
+									<th>定义</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr align="center">
+									<td>1</td>
+									<td>蜂窝通信模块</td>
+									<td>M</td>
+								</tr>
+								<tr align="center">
+									<td>2</td>
+									<td>WIFI 通信模组</td>
+									<td>W</td>
+								</tr>
+								<tr align="center">
+									<td>3</td>
+									<td>蓝牙通信模组</td>
+									<td>B</td>
+								</tr>
+							</tbody>
+						</table>
+					<li id="c2-inside">内置设备类型</li>
+						<table border="1" cellpadding="10" cellspacing="0">
+							<thead>
+								<tr align="center">
+									<th>序号</th>
+									<th>名字</th>
+									<th>定义</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr align="center">
+									<td>1</td>
+									<td>独立设备</td>
+									<td>S</td>
+								</tr>
+								<tr align="center">
+									<td>2</td>
+									<td>融合设备</td>
+									<td>I</td>
+								</tr>
+								<tr align="center" style="color: blue;">
+									<td>3</td>
+									<td>独立+融合设备</td>
+									<td>B</td>
+								</tr>
+							</tbody>
+						</table>
+					<li>计算核心类型、外设类型</li>
+						<table border="1" cellpadding="10" cellspacing="0">
+							<thead>
+								<tr align="center">
+									<th>序号</th>
+									<th>名字</th>
+									<th>定义</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr align="center">
+									<td>1</td>
+									<td>精简版</td>
+									<td>T</td>
+								</tr>
+								<tr align="center">
+									<td>2</td>
+									<td>基础版</td>
+									<td>B</td>
+								</tr>
+								<tr align="center">
+									<td>3</td>
+									<td>标准版</td>
+									<td>S</td>
+								</tr>
+								<tr align="center">
+									<td>4</td>
+									<td>高级版</td>
+									<td>A</td>
+								</tr>
+								<tr align="center">
+									<td>5</td>
+									<td>增强版</td>
+									<td>P</td>
+								</tr>
+								<tr align="center">
+									<td>6</td>
+									<td>超级版</td>
+									<td>U</td>
+								</tr>
+							</tbody>
+						</table>
+						<p>不同类型对应的资源数量如下:</p>
+						<table border="1" cellpadding="10" cellspacing="0">
+							<caption id="core-spec">计算核心规格</caption>
+							<thead>
+								<tr align="center">
+									<th>序号</th>
+									<th>规格项</th>
+									<th>子项</th>
+									<th>精简版(T)</th>
+									<th>基础版(B)</th>
+									<th>标准版(S)</th>
+									<th>高级版(A)</th>
+									<th>说明</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr align="center">
+									<td>1</td>
+									<td>处理器</td>
+									<td>核心数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>2</td>
+									<td rowspan="3">存储</td>
+									<td>FLASH</td>
+									<td>64KB</td>
+									<td>64KB</td>
+									<td>128KB</td>
+									<td>256KB</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>3</td>
+									<!-- <td></td> -->
+									<td>RAM</td>
+									<td>32KB</td>
+									<td>64KB</td>
+									<td>128KB</td>
+									<td>128KB</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>4</td>
+									<!-- <td></td> -->
+									<td>DATAFLASH</td>
+									<td>64KB</td>
+									<td>64KB</td>
+									<td>64KB</td>
+									<td>128KB</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td colspan="8" align="center" id="device-spec">外设规格(非管脚复用模式)</td>
+								</tr>
+								<tr align="center">
+									<td>5</td>
+									<td rowspan="2">ADC</td>
+									<td>通道</td>
+									<td>2</td>
+									<td>4</td>
+									<td>8</td>
+									<td>16</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>6</td>
+									<!-- <td></td> -->
+									<td>分辨率</td>
+									<td>12bits</td>
+									<td>12bits</td>
+									<td>12bits</td>
+									<td>12bits</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>7</td>
+									<td rowspan="3">UART</td>
+									<td>通道</td>
+									<td>2/3</td>
+									<td>2/3</td>
+									<td>2/3</td>
+									<td>4/5</td>
+									<td align="left">内置独立设备时,独立外设连接在VSOC的UART0上;<br>内置融合设备时,外设功能通过API向客户程序提供接口,不占用独立UART。</td>
+								</tr>
+								<tr align="center">
+									<td>8</td>
+									<!-- <td></td> -->
+									<td>硬件流控</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>9</td>
+									<!-- <td></td> -->
+									<td>最大速率</td>
+									<td>115200bps</td>
+									<td>115200bps</td>
+									<td>115200bps</td>
+									<td>2Mbps</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>10</td>
+									<td rowspan="2">GPIO</td>
+									<td>数量</td>
+									<td>8</td>
+									<td>16</td>
+									<td>16</td>
+									<td>24</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>11</td>
+									<!-- <td></td> -->
+									<td>支持唤醒</td>
+									<td>1</td>
+									<td>2</td>
+									<td>2</td>
+									<td>2</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>12</td>
+									<td>TIMER</td>
+									<td>数量</td>
+									<td>3</td>
+									<td>3</td>
+									<td>3</td>
+									<td>4</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>13</td>
+									<td rowspan="2">RTC</td>
+									<td>数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>14</td>
+									<!-- <td></td> -->
+									<td>支持唤醒</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>15</td>
+									<td rowspan="2">PWM</td>
+									<td>通道</td>
+									<td>2</td>
+									<td>2</td>
+									<td>4</td>
+									<td>8</td>
+									<td align="left"></td>
+								</tr>
+								<tr align="center">
+									<td>16</td>
+									<!-- <td></td> -->
+									<td>最大时钟频率</td>
+									<td>1MHz</td>
+									<td>1MHz</td>
+									<td>1MHz</td>
+									<td>1MHz</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>18</td>
+									<td rowspan="2">I2C</td>
+									<td>数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>2</td>
+									<td>2</td>
+									<td align="left"></td>
+								</tr>
+								<tr align="center">
+									<td>19</td>
+									<!-- <td></td> -->
+									<td>速率</td>
+									<td>100KHz/400KHz</td>
+									<td>100KHz/400KHz</td>
+									<td>100KHz/400KHz</td>
+									<td>100KHz/400KHz</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>20</td>
+									<td rowspan="2">SPI</td>
+									<td>数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>2</td>
+									<td>2</td>
+									<td align="left"></td>
+								</tr>
+								<tr align="center">
+									<td>21</td>
+									<!-- <td></td> -->
+									<td>速率</td>
+									<td>4MHz</td>
+									<td>4MHz</td>
+									<td>4MHz</td>
+									<td>4MHz</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>22</td>
+									<td>WDT</td>
+									<td>数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td align="left"></td>
+								</tr>
+								<tr align="center">
+									<td>23</td>
+									<td>调试端口<br>(调试/下载/生产)</td>
+									<td>数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td align="left"></td>
+								</tr>
+								<tr align="center" style="color: blue;">
+									<td>24</td>
+									<td rowspan="3">NET</td>
+									<td>数量</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td>1</td>
+									<td align="left"></td>
+								</tr>
+								<tr align="center" style="color: blue;">
+									<td>25</td>
+									<!-- <td></td> -->
+									<td>DNS</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td>支持</td>
+									<td align="left">支持域名解析IPV4地址</td>
+								</tr>
+								<tr align="center" style="color: blue;">
+									<td>26</td>
+									<!-- <td></td> -->
+									<td>socket<br>连接数量</td>
+									<td>8</td>
+									<td>8</td>
+									<td>8</td>
+									<td>8</td>
+									<td align="left">支持IPV4地址</td>
+								</tr>
+								<tr align="center">
+									<td>27</td>
+									<td rowspan="2">文件系统</td>
+									<td>空间</td>
+									<td>OEM确定</td>
+									<td>OEM确定</td>
+									<td>OEM确定</td>
+									<td>OEM确定</td>
+									<td></td>
+								</tr>
+								<tr align="center">
+									<td>28</td>
+									<!-- <td></td> -->
+									<td>文件个数限制</td>
+									<td>16</td>
+									<td>16</td>
+									<td>16</td>
+									<td>16</td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+					<li>版本</li>
+						<p>01:第一版</p>
+					<li>命名示例</li>
+						<ul>
+							<li>SPVSOC-MSSS-01</li>
+							<p>命名含义:<br>
+								CPU:1 RAM:128KB ROM:128KB DATAFLASH:64KB<br>
+								INSEDE-MODEM:1,at-modem on UART0<br>
+								UART:3 GPIO:16 TIMER:3 RTC:1<br>
+								PWM:4 IIC:2 SPI:2 WDT:1<br>
+							</p>
+							<li>SPVSOC-MSBB-01</li>
+							<p>命名含义:<br>
+								CPU:1 RAM:64KB ROM:64KB DATAFLASH:64KB<br>
+								INSEDE-MODEM:1,at-modem on UART0<br>
+								UART:3 GPIO:16 TIMER:3 RTC:1<br>
+								PWM:2 IIC:1 SPI:1 WDT:1<br>
+							</p>
+						</ul>
+					<li id="oem-diff">OEM厂商实现的VSOC规格</li>
+						<table border="1" cellpadding="10" cellspacing="0">
+							<thead>
+								<tr align="center">
+									<th>序号</th>
+									<th>OEM厂商</th>
+									<th>芯片平台</th>
+									<th>产品型号</th>
+									<th>实现规格</th>
+									<th>规格差异</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr align="center">
+									<td>1</td>
+									<td>有方科技</td>
+									<td>UIS8910</td>
+									<td>Aleta-N58CA</td>
+									<td>SPVSOC-MSSS-01</td>
+									<td><a href="diff_neoway_uis8910_tbd.html">规格差异</a></td>
+								</tr>
+								<tr align="center" style="color: blue;">
+									<td>2</td>
+									<td>有方科技</td>
+									<td>UIS8850</td>
+									<td>Aleta-N706CB</td>
+									<td>SPVSOC-MSSB-01</td>
+									<td>规格差异</td>
+								</tr>
+							</tbody>
+						</table>
+				</ul>
+			</div>
+
+			<h1 id="c3">2. VSoc应用软件编程</h1>
+			<h2 id="vsoc_model">3.1 VSoc编程模型</h2>
+				<div>
+					<h3 id="vsoc_model_overview">3.1.1 简介</h3>
+						<p>虚拟Soc（VSoc）遵循标准单片机标准,内置RAM、程序Flash、数据flash、中断控制器、定时器、看门狗、ADC、IIC、GPIO、SPI、UART、PWM、RTC(说明:具体设备数量和详细参数请参阅对应的硬件模块说明)。</p>
+						<p>VSoc编程模型支持单任务前后台C语言编程模型、RTOS C语言编程模型、POSIX标准C语言编程模型(说明:默认编程模型为单任务前后台C语言编程模型)。</p>
+
+					<h3 id="vsoc_model_lib_header">3.1.2 库及头文件</h3>
+						<p>VSoc 原生支持硬件操作通用库。硬件操作API头文件为sp_raw.h</p>
+						<p>支持的标准C库函数,请参考自动加入工程中的其他头文件定义</p>
+
+					<h3 id="vsoc_model_log">3.1.3 log输出</h3>
+						<p>VSoc支持标准控制台输出,使用pirntf输出到IDE标准控制台,不占用通用UART。</p>
+
+					<h3 id="vsoc_model_device">3.1.4 硬件访问模型</h3>
+						<p>VSoc不提供寄存器级别的访问,只提供对象级别访问。</p>
+						<p>Vsoc对象有两类,一个类为中断,一类为外设。</p>
+
+					<h3 id="vsoc_model_interrupt_api">3.1.5 中断访问API</h3>
+						<ul>
+							<li>register_irq_service:注册/注销中断服务程序</li>
+							<li>enable_interrupt:使能全局中断</li>
+							<li>disable_interrupt:关闭全局中断</li>
+						</ul>
+						<h4 id="vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</h4>
+						<ul>
+							<li>原型:int register_irq_service(unsigned int irq_no,irq_service_t service_func,void* private)</li>
+							<li>功能:向VSoc注册中断服务程序。当中断发生时,VSoc打断当前的任务,执行中断服务程序;
+								执行完中断服务程序后返回用户程序。</li>
+							<li>参数:</li>
+							<ul>
+								<li>irq_no:中断服务号,类型 unsigned int</li>
+									中断服务号定义如下:
+									<ol>
+										<li>#define TIMER0_IRQ_NO   0</li>
+										<li>#define TIMER1_IRQ_NO   1</li>
+										<li>#define TIMER2_IRQ_NO   2</li>
+										<li>#define UART0_IRQ_NO	3</li>
+										<li>#define UART1_IRQ_NO	4</li>
+										<li>#define UART2_IRQ_NO	5</li>
+										<li>#define GPIO_IRQ_NO	 6</li>
+										<li>#define ADC_IRQ_NO	  9</li>
+										<li>#define RTC_IRQ_NO	  14</li>
+										<li>#define I2C0_IRQ_NO	 15</li>
+										<li>#define I2C1_IRQ_NO	 16</li>
+										<li>#define SPI0_IRQ_NO	 17</li>
+										<li>#define SPI1_IRQ_NO	 18</li>
+										<li style="color: blue;">#define NET_IRQ_NO	  19</li>
+									</ol>
+									VSoc支持最多32个设备中断,中断号0~31都属于允许的正常范围;上述列表中未定义的中断号保留给将来设备使用。
+								<li>service_func:中断服务程序函数指针的类型 int (*irq_service_t)(int irq,void *p_data)</li>
+								<li>parivate:中断服务程序私有数据指针,类型void*;VSoc保存该指针,并在中断调用时传递给中断服务程序</li>
+							</ul>
+							<li>返回值:</li>
+							<ul>
+								<li>类型:int</li>
+								<li>0: 执行成功</li>
+								<li>-3 中断号超出范围</li>
+								<li>-4 在中断程序中调用</li>
+							</ul>
+
+							<li>中断服务程序说明:</li>
+								<ul>
+									<li>原型:int (*irq_service_t)(int irq,void *p_data)</p></li>
+									<li>irq:当前正在处理的中断号,由VSoc传递给中断服务处理函数</li>
+									<li>p_data:用户注册中断处理服务时注册的私有数据指针,由VSoc传递给中断服务处理程序</li>
+									<li>返回值: 0</li>
+								</ul>
+							<li>注销中断处理服务:</li>
+							<ul>
+								<li>原型:void unregister_irq_service(irq_no)</li>
+								<li>参数:</li>
+								<ul>
+									<li>irq_no:中断服务号</li>
+								</ul>
+							</ul>
+						</ul>
+						<h4>3.1.5.2 使能全局中断</h4>
+						<ul>
+							<li>原型:enable_interrupt()</li>
+							<li>参数:无</li>
+							<li>返回值:无</li>
+						</ul>
+						<h4>3.1.5.3 关闭全局中断</h4>
+						<ul>
+							<li>原型:disable_interrupt()</li>
+							<li>功能:当全局中断被关闭时,外设产生中断会被挂起,并在重新开启全局中断时重新调用被挂起的中断服务</li>
+							<li>参数:无</li>
+							<li>返回值:无</li>
+						</ul>
+					<h3  id="vsoc_model_device_api">3.1.6 外设访问API</h3>
+						<p>外设对象支持的方法包括:hw_open、hw_close、hw_read、hw_write、hw_ctl。</p>
+						<ul>
+							<li>hw_open(int dev_id)</li>
+							<ul>
+								<li>功能:使能外设,个别外设为不可使能设备,详见具体外设说明</li>
+								<li>参数:dev_id,设备号,详见具体外设说明</li>
+								<li>返回值:</li>
+								<ul>
+									<li>类型:int</li>
+									<li>0: 打开成功</li>
+									<li>-1: 打开失败,失败原因:可能是不支持设备或者硬件故障</li>
+								</ul>
+							</ul>
+
+							<li>hw_close(int dev_id)</li>
+							<ul>
+								<li>功能:关闭外设,个别外设为不关闭设备,详见具体外设说明</li>
+								<li>参数:dev_id,设备号,详见具体外设说明</li>
+								<li>返回值:</li>
+								<ul>
+									<li>类型:int</li>
+									<li>0: 关闭成功</li>
+									<li>-1: 关闭失败,失败原因:可能是不支持设备或者硬件故障</li>
+								</ul>
+							</ul>
+
+							<li>hw_read(int dev_id,void *buf,unsigned int read_len,unsigned int start_site)</li>
+							<ul>
+								<li>功能:从外设读取数据;读取数据前应先打开设备并进行必要的参数设置</li>
+								<li>参数:</li>
+								<ul>
+									<li>dev_id,设备号,详见具体外设说明</li>
+									<li>buf,数据保存地址指针</li>
+									<li>read_len,读取字节数量</li>
+									<li>start_site,从设备中读取数据的起始位置（只有个别设备支持该参数,例如数据flash;不支持该参数的设备,此参数不起作用）</li>
+								</ul>
+								<li>返回值:</li>
+								<ul>
+									<li>类型:int</li>
+									<li>>=0: 实际读取字节数</li>
+									<li>-1: 读取失败</li>
+								</ul>
+							</ul>
+
+							<li>hw_write(int dev_id,void *buf,unsigned int write_len,unsigned int start_site)</li>
+							<ul>
+								<li>功能:向外设写入数据;写入数据前应先打开设备并进行必要的参数设置</li>
+								<li>参数:</li>
+								<ul>
+									<li>dev_id,设备号,详见具体外设说明</li>
+									<li>buf, 待写入数据的缓存地址</li>
+									<li>write_len,待写入数据的字节长度</li>
+									<li>start_site,向设备中写入数据的起始位置（只有个别设备支持该参数,例如数据flash;不支持该参数的设备,此参数不起作用）</li>
+								</ul>
+								<li>返回值:</li>
+								<ul>
+									<li>类型:int</li>
+									<li>>=0: 实际写入字节数</li>
+									<li>-1: 写入失败</li>
+								</ul>
+							</ul>
+
+							<li>hw_ctl(int dev_id,void *buf,unsigned int cmd,void *arg )</li>
+							<ul>
+								<li>功能:向外设发送控制命令</li>
+								<li>参数:</li>
+								<ul>
+									<li>dev_id,设备号,详见具体外设说明</li>
+									<li>cmd,控制命令,详见各外设说明</li>
+									<li>arg,控制参数指针</li>
+								</ul>
+								<li>返回值:</li>
+								<ul>
+									<li>类型:int</li>
+									<li>0: 成功</li>
+									<li>-1: 失败</li>
+								</ul>
+							</ul>
+						</ul>
+						<p><em>说明</em>:为了方便使用,sp_raw.h文件对外设的访问进行了二次封装,请用户使用封装后的编程接口。</p>
+						<p>如需使用原始调用,请联系磉盘计算机科技有限公司获取各个设备的详细使用说明。</p>
+						<p>无特殊情况,不建议直接调用原始接口访问外设。</p>
+
+					<h3  id="vsoc_model_program">3.1.7 单任务前后台编程模型</h3>
+						<p>前后台单任务编程模型是一种常用的单片机编程模式,程序分成两大部分,中断服务程序和业务程序。</p>
+						<p>中断服务程序在中断发生时立即被执行,主要用于处理高优先级实时事件（例如缓冲串口接收到数据防止被后续的输入覆盖）或者产生某种事件标志供其他业务使用（例如系统滴答）等。业务程序主要用于处理较为复杂且对实行性要求不高的任务,通常被事件标志驱动。</p>
+						<h4>3.1.7.1 单片机前后台模型典型程序结构如下:</h4>
+						<pre>
+//事件定义
+int event_1,event_2,...;
+int sys_tick;//滴答计数
+
+//中断服务程序1
+int irq_service_1(int irq_no,void *p)
+{
+	//处理外设
+	//设置事件
+	return 0;
+}
+int irq_service_2(int irq_no,void *p)
+{
+	//处理外设
+	//设置事件
+	return 0;
+}
+.....
+
+//初始化硬件
+void init_bsp()
+{
+	register_irq_service(dev1_id,irq_service_1,p_1);
+	register_irq_service(dev2_id,irq_service_2,p_2);
+	.....
+}
+//业务程序
+int main(int arg)
+{
+	//初始化硬件
+	init_bsp();
+	while(1)//for(;;)
+	{
+		//计时条件满足,
+		if(systick....)
+		{
+			...
+		}
+		//事件1发生
+		if(event_1...)
+		{
+					.....
+		}
+		//事件2发生
+		{
+					....
+		}
+	}
+}
+						</pre>
+						<h4>3.1.7.2 前后台模型变形1:中断模式</h4>
+						<pre>
+//中断服务程序1
+int irq_service_1(int irq_no,void *p)
+{
+	//处理外设
+	//设置事件
+	return 0;
+}
+int irq_service_2(int irq_no,void *p)
+{
+	//处理外设
+	//设置事件
+	return 0;
+}
+.....
+//初始化硬件
+void init_bsp()
+{
+	...
+	register_irq_service(dev1_id,irq_service_1,p_1);
+	register_irq_service(dev2_id,irq_service_2,p_2);
+	...
+}
+
+int main(int arg)
+{
+	//初始化硬件
+	init_bsp();
+	while(1);
+}
+						</pre>
+						<h4>3.1.7.3 前后台模型变形2:查询模型</h4>
+						<pre>
+//初始化硬件
+void init_bsp()
+{
+	.....
+}
+
+int main(int arg)
+{
+	//初始化硬件
+	init_bsp();
+	while(1)//for(;;)
+	{
+		if(查询硬件1状态满足条件)
+		{
+			...
+		}
+		if(查询硬件2状态满足条件)
+		{
+			...
+		}
+	}
+}
+						</pre>
+						<h4>3.1.7.4 VSoc前后台编程模型示例程序</h4>
+						<pre>
+//-----------------------示例程序----------------------------
+#include <sp_raw.h> //VSoc硬件和C库头文件
+
+volatile unsigned int systick = 0;		//系统滴答计数
+volatile unsigned int one_shot_flag = 0;	//定时器单次计时完成标志
+unsigned int timer1_count = 0;			//定时器1,到时次数
+//整数转字符串函数
+unsigned int u32_ro_string(unsigned int data, char *buf)
+{
+	int i, j;
+	char t;
+	for (i = 0;; i++)
+	{
+		buf[i] = (data % 10) + '0';
+		data = data / 10;
+		if (0 == data)
+		{
+			break;
+		}
+	}
+	i++;
+	for (j = 0; j < i / 2; j++)
+	{
+		t = buf[j];
+		buf[j] = buf[i - 1 - j];
+		buf[i - 1 - j] = t;
+	}
+	buf[i] = 0;
+	return i;
+}
+//定时器0中断服务程序,定时器0作为系统滴答定时器
+int timer0_irq_deal(int irq_no, void *data)
+{
+	//滴答加一
+	systick++;
+	return 0;
+}
+//定时器1中断服务程序
+//定时中断将定时到时完成如下任务:
+// 1.到时次数加一,并转换成字符输出到UART1中
+// 2.将gpio0反转输出
+int timer1_irq_deal(int irq_no, void *data)
+{
+	char buf[16];
+	unsigned int ret;
+	timer1_count++;
+	uart1_write("timer1 count:", 13); //向uart1写数据
+	ret = u32_ro_string(timer1_count, buf);
+	uart1_write(buf, ret); //向uart1写数据
+	uart1_write("\n", 1);  //向uart1写数据
+
+	gpio_set_value(0, !gpio_get_value(0)); //获取gpio0的状态,并反转
+	return 0;
+}
+//定时器3中断服务程序
+//定期计时中断发生,设置单次及时完成标志
+int timer2_irq_deal(int irq_no, void *data)
+{
+	one_shot_flag = 1;
+	return 0;
+}
+// GPIO中断服务程序
+int gpio_irq_deal(int irq_no, void *data)
+{
+	unsigned int flags;
+
+	flags = gpio_get_irq_flags(); //获取当前发生中断IO标志位
+
+	if (flags & gpio_irq_flag(8)) //如果gpio8发送中断,则将gpio2设置成gpio8的状态
+	{
+		gpio_set_value(2, gpio_get_value(8));
+	}
+	//清空已经发生中断的gpio标志位;如果在gpio_get_irq_flags()后又发送的gpio中断,不会被本函数清空,会在中断服务返回后再次调用gpio中断服务程序
+	gpio_clr_irq_flags(flags);
+	return 0;
+}
+// UART0中断处理程序,Vsoc Uart自带缓冲,具体缓冲大小请查阅硬件说明书
+int uart0_irq_deal(int irq_no, void *data)
+{
+	char buf[32];
+	int ret;
+	//读取UART0的设备状态标准,判读是否可读
+	if (uart_is_r_irq_pending(uart_get_all_flags(UART0_DEV_ID)))
+	{
+		//如果可读,读取uart0数据,并写入uart1中
+		ret = uart_read(UART0_DEV_ID, buf, 32);
+		if (ret > 0)
+		{
+			uart_write(UART1_DEV_ID, buf, ret);
+		}
+	}
+	return 0;
+}
+// Adc中断服务程序
+int adc_irq_deal(int irq_no, void *data)
+{
+	char buf[16];
+	unsigned int adcval = 0;
+	//读取adc值,并将数值转化成字符输出到uart1
+	int ret = adc_read(&adcval, sizeof(adcval));
+	if (ret > 0)
+	{
+		ret = u32_ro_string(adcval, buf);
+		uart1_write("adcval:", 7);
+		uart1_write(buf, ret);
+		uart1_write("\n", 1);
+	}
+	return 0;
+}
+
+int main(int arg)
+{
+	printf("--------init bsp-------\n");
+	// init devices
+	disable_interrupt();						//关闭全局中断
+	timer0_set_count(10000);					//定时器0设置成10000微秒,默认循环计数模式
+	timer1_set_count(2000000);					//定时器1设置成2秒,默认循环计数模式
+	timer2_set_count(500000);					//定时器2设置成0.5秒,默认循环计数模式
+	timer2_enable_onshot_mode();					//定时器2设置成单次计数模式
+	timer0_enable_irq();						//使能定时器0中断
+	timer1_enable_irq();						//使能定时器1中断
+	timer2_enable_irq();						//使能定时器2中断
+	register_irq_service(TIMER0_IRQ_NO, timer0_irq_deal, NULL);	//注册定时器0中断服务程序
+	register_irq_service(TIMER1_IRQ_NO, timer1_irq_deal, NULL);	//注册定时器1中断服务程序
+	register_irq_service(TIMER2_IRQ_NO, timer2_irq_deal, NULL);	//注册定时器2中断服务程序
+
+	uart0_set(9600, UART_MODE_8N1);					//设置uart0,波特率9600,8位数据,无校验位
+	uart1_set(19200, UART_MODE_8N1);				//设置uart1,波特率9600,8位数据,无校验位
+	register_irq_service(UART0_IRQ_NO, uart0_irq_deal, NULL);	//注册uart0中断服务程序
+	uart0_set_r_irq_e();						//使能uart0读中断
+
+	register_irq_service(GPIO_IRQ_NO, gpio_irq_deal, NULL);		//注册GPIO中断服务程序
+	gpio_set_fun_mode(8, GPIO_FUNC_INPUT);				//设置gpio8为输入模式
+	gpio_set_irq_mode(8, GPIO_IRQ_MODE_ALL);			//设置gpio8中断模式为双沿中断
+	gpio_clr_irq_mask(8);						//清除gpio8中断屏蔽位
+#if 0
+	gpio_set_fun_mode(2,GPIO_FUNC_INPUT);
+	gpio_set_irq_mode(2,GPIO_IRQ_MODE_ALL);
+	gpio_clr_irq_mask(2);
+	gpio_set_fun_mode(0,GPIO_FUNC_INPUT);
+	gpio_set_irq_mode(0,GPIO_IRQ_MODE_ALL);
+	gpio_clr_irq_mask(0);
+#else
+	gpio_set_fun_mode(2, GPIO_FUNC_OUTPUT);			//设置gpio2为输出模式
+	gpio_set_fun_mode(0, GPIO_FUNC_OUTPUT);			//设置gpio0为输出模式
+#endif
+	timer0_enable(); //使能定时器0
+	timer1_enable(); //使能定时器1
+	timer2_enable(); //使能定时器2
+	uart0_enable();  //使能uart0
+	uart1_enable();  //使能uart1
+
+	watchdog_set_timeout(3000000);				//设置看门狗定时时间3秒
+	watchdog_enable();					//使能看门沟
+
+	adc_enable();						//使能ADC
+	adc_enable_irq();					//使能ADC中断
+	register_irq_service(ADC_IRQ_NO, adc_irq_deal, NULL);	//注册adc中断处理服务
+
+	enable_interrupt(); //开启全局中断
+
+	unsigned int timer0 = 0;
+	unsigned int timer0_count = 0;
+	unsigned int timer1 = 0;
+	// unsigned int timer1_count = 0;
+	unsigned int one_shot_count = 0;
+	char buf[16];
+	int ret;
+	//	unsigned int flags;
+	printf("--------start-------\n");
+	while (1)
+	{
+		if (systick - timer0 >= 200) // 2秒定时器到达
+		{
+			printf("hello ---%d---\n", timer0_count); //输出log
+			timer0 += 200;
+			timer0_count++;			// 2秒定时器计数
+			uart0_write("AT+CSQ\r", 7);	//向uart0发送AT
+
+			flash_inside_enable();									 //使能数据flash
+			flash_inside_write(&timer0_count, sizeof(timer0_count), 0); //将2秒定时计数写入flash
+			flash_inside_disable();									 //关闭数据flash
+
+			watchdog_feed();	//喂狗
+			adc_start();		//启动adc采样
+		}
+		if (systick - timer1 >= 500)	// 5秒定时器
+		{
+			printf("enable timer2\n");
+			timer2_enable();	//再次开启定时2,定时器2为单次定时器,当其计数到达时,自动停止计数
+			timer1 += 500;
+		}
+		if (1 == one_shot_flag)		//定时器2单次定时结束
+		{
+#if 0
+			//野指针测试
+			char *i;
+			//i= 0x7070000;
+			*i = 0;
+			printf("i addr : %p\n",i);
+#endif
+			printf("on_shot_flag set\n");		//输出log
+			one_shot_flag = 0;			//清空标志
+			uart1_write("oneshot:", 8);
+			ret = u32_ro_string(one_shot_count, buf);
+			buf[ret] = '\n';
+			uart1_write(buf, ret + 1);		//输出计数次数到uart1
+			one_shot_count++;
+		}
+		ret = uart1_read(buf, 16);			//轮询读uart1
+		if (ret > 0)					//如果uart1有数据输入,则反射回去
+		{
+			uart1_write(buf, ret);
+		}
+	}
+
+	return 0;
+}
+
+						</pre>
+				</div>
+
+			<h2 id="vsoc_device">3.2 VSoc设备编程</h2>
+				<div>
+					<h3 id="vsoc_device_timer">3.2.1 TIMER</h3>
+						<div>
+							<p>VSoc提供了3个定时器,计时精度为1微妙,定时计数为32位无符号整数。</p>
+							<p>每个定时器都有一个独立的中断号,每个定时器可以独立控制中断开启和关闭。</p>
+							<p>定时器有两种工作模式:一、循环计数模式、二、单次计数模式。</p>
+							<p>定时器内部会记录自定时器开启后累计到时次数,应用程序可以通过API获取该数值。</p>
+							<p>以下以timer0为例说明编程API</p>
+
+							<h4>3.2.1.1 设置定时时间</h4>
+								<p>初始默认时间为0。</p>
+								<ul>
+									<li>原型:int timer0_set_count(unsigned int time_out)</li>
+									<li>参数:time_out,定时时间,精度1微秒;</li>
+									<li>返回值:0</li>
+								</ul>
+								<p>若定时器已经启动,且设置的定时时间为0,将停止定时器。</p>
+								<p>若定时器已经启动,且设置的定时时间不为0,将重新启动定时器。</p>
+								<p>最大定时时间为0xFFFFFFFF微秒,约1.19小时</p>
+
+							<h4>3.2.1.2 设置工作模式</h4>
+								<p>初始默认工作模式为循环模式。</p>
+								<ul>
+									<li>单次模式:void timer0_enable_onshot_mode()</li>
+									<p>定时器默认工作模式为循环定时模式,若需要单次定时,可以使用该接口进行设置。</p>
+									<li>循环模式:void timer0_disable_onshot_mode()</li>
+									<p>若定时器当前工作模式为单次模式,可以使用该接口设置为循环模式。</p>
+								</ul>
+								<p>若定时器已经启动,设置工作模式将重新启动定时器。</p>
+
+							<h4>3.2.1.3 设置中断服务程序</h4>
+								<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a>。</p>
+
+							<h4>3.2.1.4 使能/禁止中断</h4>
+								<p>初始默认为禁止中断。</p>
+								<ul>
+									<li>使能定时器中断: void timer0_enable_irq()</li>
+									<p>使能定时器中断后,若定时器产生超时,注册的中断服务程序将被调用。</p>
+									<p>若定时器已经发生超时,使能定时器中断时,不会调用中断服务程序。</p>
+									<li>禁止定时器中断:void timer0_disable_irq()</li>
+									<p>禁止定时器中断后,若定时器超时,注册的中断服务程序<span style="color: red;">不会</span>被调用,程序可以通过读取累计超时次数进行处理。</p>
+								</ul>
+
+							<h4>3.2.1.5 启动/停止定时器</h4>
+								<p>初始默认为停止定时器。</p>
+								<ul>
+									<li>启动定时器:void timer0_enable()</li>
+									<p>启动定时器时,定时器重新开始计数。到达设定的定时时间后,产生中断事件,若全局中断使能,并且定时器中断使能,则注册的中断服务程序被调用。之后,若定时器工作在循环模式,则定时器将重新计时;若定时器工作在单次模式,则定时器停止计时。</p>
+									<li>停止定时器:void timer0_disable()</li>
+									<p>定时器停止计时。</p>
+								</ul>
+
+							<h4>3.2.1.6 读取状态</h4>
+								<ul>
+									<li>读取定时时间</li>
+									<ul>
+										<li>原型:unsigned int timer0_read_count_config(void)</li>
+										<li>功能:读取定时器0当前定时时间</li>
+										<li>返回值:定时时间</li>
+									</ul>
+									<li>读取工作模式</li>
+									<ul>
+										<li>原型:unsigned int timer0_read_oneshot_config()</li>
+										<li>功能:读取定时器0定时模式</li>
+										<li>返回值</li>
+										<ul>
+											<li>0 循环定时</li>
+											<li>1 单次定时</li>
+										</ul>
+									</ul>
+									<li>中断使能状态</li>
+									<ul>
+										<li>原型:unsigned int timer0_read_irq_config(void)</li>
+										<li>功能:读取定时器0中断配置</li>
+										<div>
+											<li>返回值:</li>
+											<ul>
+												<li>0 禁止中断</li>
+												<li>1 使能中断</li>
+											</ul>
+										</div>
+									</ul>
+									<li>累计到时次数</li>
+										<p>初始默认值为0。</p>
+										<ul>
+											<li>原型:unsigned int timer0_read_exp(void)</li>
+											<li>功能:读取定时器0当前已经发送超时次数（用于精确定时）</li>
+											<li>返回值:超时次数</li>
+										</ul>
+									<li>运行状态</li>
+										<ul>
+											<li>原型:unsigned int timer0_get_status()</li>
+											<li>功能:查询定时器0运行状态</li>
+											<li>返回值:</li>
+											<ul>
+												<li>0 定时器停止</li>
+												<li>1 已启动计时</li>
+											</ul>
+										</ul>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_gpio">3.2.2 GPIO</h3>
+						<div>
+							<p>VSoc提供了若干组GPIO,每组GPIO包含最多32个独立控制的GPIO单元,GPIO单元通过编号0~31访问。</p>
+							<p>每组GPIO共享一个中断号,中断服务程序通过读取设备状态,判断哪些GPIO产生了中断。</p>
+							<p>实际的GPIO数量,将由VSOC类型和硬件实现差异确定,具体请参考<a href="#device-spec">外设规格</a>和<a href="#oem-diff">OEM厂商实现的VSOC规格</a>中的GPIO部分。</p>
+							<p>控制不存在的GPIO单元,不会产生实际作用;查询不存在的GPIO单元,返回值无实际意义。</p>
+							<p>在Linux桌面平台,访问不存在的GPIO将提示错误信息,并停止运行应用程序,以便于程序定位错误。</p>
+							<p>以下以第一组GPIO为例说明编程API。</p>
+							<h4>3.2.2.1 设置GPIO功能</h4>
+								<p>初始功能为高阻态。</p>
+								<ul>
+									<li>原型:void gpio_set_fun_mode(unsigned int id,unsigned int mode)</li>
+									<li>参数:</li>
+									<ul>
+										<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+										<li>mode: 功能模式 (该参数低2位有效, mode & 0x03)</li>
+										<pre>
+#define GPIO_FUNC_Z	 0  //高阻
+#define GPIO_FUNC_INPUT  1  //输入模式
+#define GPIO_FUNC_OUTPUT 2  //输出模式
+#define GPIO_FUNC_SP	 3  //特殊功能,复用脚
+										</pre>
+									</ul>
+								</ul>
+							<h4>3.2.2.2 GPIO输出</h4>
+								<p>设置为输出模式的GPIO,可以设置GPIO输出高低电平。</p>
+								<ul>
+									<li>原型:void gpio_set_value(unsigned int id,unsigned int value)</li>
+									<li>参数:</li>
+									<ul>
+										<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+										<li>value: 0~低电平 1~高电平  (该参数低1位有效, value & 0x01)</li>
+									</ul>
+									<p>控制非输出模式的GPIO输出,不会产生实际作用。</p>
+								</ul>
+
+							<h4>3.2.2.3 查询GPIO状态</h4>
+								<p>初始GPIO状态由外部电路确定;Linux桌面平台:可以通过IDE菜单"设置",设置VSOC参数,指定GPIO初始状态。</p>
+								<ul>
+									<li>查询全部GPIO的状态</li>
+									<ul>
+										<li>原型:unsigned int gpio_get_values(void)</li>
+										<li>返回值:全部GPIO状态位掩码</li>
+										比如gpio0/gpio3/gpio5高电平,其余低电平,则返回值为0x29,二进制表示:B0000_0000_0010_1001
+									</ul>
+									<li>查询单个GPIO的状态</li>
+									<ul>
+										<li>原型: unsigned int gpio_get_value(unsigned int id)</li>
+										<li>参数:</li>
+										<ul>
+											<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+										</ul>
+										<li>返回值:0~低电平 1~高电平</li>
+									</ul>
+								</ul>
+
+							<h4>3.2.2.4 GPIO中断</h4>
+								<p>不同的gpio功能都可以设置中断模式;只有gpio为输入的GPIO,才会真正产生中断。</p>
+								<ul>
+									<li>设置中断模式</li>
+										<p>依据外部输入信号的不同,GPIO支持不同的边沿中断触发模式。</p>
+										<p>初始中断模式为无中断,不触发中断。</p>
+										<ul>
+											<li>原型:void gpio_set_irq_mode(unsigned int id,unsigned int mode)</li>
+											<li>参数:</li>
+											<ul>
+												<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+												<li>mode: 中断模式  (该参数低2位有效, mode & 0x03)</li>
+												<pre>
+#define GPIO_IRQ_MODE_NONE	0 //无中断
+#define GPIO_IRQ_MODE_UP	1 //上升沿
+#define GPIO_IRQ_MODE_DOWN	2 //下降沿
+#define GPIO_IRQ_MODE_ALL	3 //上升和下降沿
+												</pre>
+											</ul>
+										</ul>
+									<li>设置中断服务程序</li>
+										<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a>。</p>
+										<p><em>注意:同一组GPIO共享同一个中断号,在中断服务程序中,请通过读取设备状态,判断哪些GPIO产生了中断。</em></p>
+									<li>使能/禁止中断</li>
+										<p>初始状态为禁止中断。</p>
+										<ul>
+											<li>使能中断(清除中断屏蔽)</li>
+											<ul>
+												<li>原型:void gpio_clr_irq_mask(unsigned int id)</li>
+												<li>参数:</li>
+												<ul>
+													<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+												</ul>
+											</ul>
+											<li>禁止中断(设置中断屏蔽)</li>
+											<ul>
+												<li>原型:void gpio_set_irq_mask(unsigned int id)</li>
+												<li>参数:</li>
+												<ul>
+													<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+												</ul>
+											</ul>
+										</ul>
+										<p>可以同时使能或禁止多个gpio中断,使用接口gpio_set_irq_masks(mask)和gpio_clr_irq_masks(mask)。</p>
+									<li>读取中断使能标志</li>
+										<ul>
+											<li>原型:unsigned int gpio_get_irq_mask(unsigned int id)</li>
+											<li>参数:</li>
+												<ul>
+													<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+												</ul>
+												<li>返回值:0~使能 1~禁止</li>
+										</ul>
+										<p>可以同时读取多个gpio中断使能标志,使用接口gpio_get_irq_masks()。</p>
+									<li>读取/清除中断标志</li>
+									<ul>
+										<li>读取中断标志</li>
+											<ul>
+												<li>原型:unsigned int gpio_get_irq_flag(unsigned int id)</li>
+												<li>参数:</li>
+													<ul>
+														<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+													</ul>
+													<li>返回值:0~未产生中断 1~已产生中断</li>
+											</ul>
+										<li>清除中断标志</li>
+											产生中断后,需要清除中断标志,避免重复处理中断。
+											<p>GPIO中断为单次中断,若没有清除中断标志,不会导致循环进入GPIO中断。</p>
+											<ul>
+												<li>原型:void gpio_clr_irq_flag(unsigned int id)</li>
+												<li>参数:</li>
+													<ul>
+														<li>id: GPIO编号,0~31 (该参数低5位有效, id & 0x1F)</li>
+													</ul>
+											</ul>
+									</ul>
+									<p>可以同时读取或清除多个gpio中断标志,使用接口gpio_get_irq_flags()和gpio_clr_irq_flags(flag)。</p>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_uart">3.2.3 UART</h3>
+						<div>
+							<p>VSoc提供了3个UART。</p>
+							<p>每个UART有一个独立中断号,UART有读中断和写中断控制,读写中断共享一个中断号。</p>
+							<p>每个UART都是保持一个状态标志,用于标识设备是否可读写,是否发送中断。</p>
+							<p>每个UART都有读写缓冲,可以一次收发多个数据,缓冲大小请参考<a href="#oem-diff">OEM厂商实现的VSOC规格</a>中的UART部分。</p>
+							<p>若VSOC类型属于内置独立设备,则独立设备默认连接至UART0,UART0不能再用于其他外设连接。</p>
+							<p>若VSOC类型属于内置融合设备,则融合设备不会占用UART0,UART0可用于其他外设连接。</p>
+							<p>以下以UART1为例说明编程API。</p>
+							<h4>3.2.3.1 设置波特率和工作模式</h4>
+								<p>初始参数为115200bps,8位数据位,无校验,1个停止位。</p>
+								<p>若设备已经打开,设置参数将立即生效,并清空接收和发送缓存。</p>
+								<ul>
+									<li>原型:void uart1_set(int bps,int mode)</li>
+									<li>参数:</li>
+									<ul>
+									<li>波特率:bps</li>
+									<pre>
+#define BAUD_RATE_B50 50
+#define BAUD_RATE_B75 75
+#define BAUD_RATE_B110 110
+#define BAUD_RATE_B134 134
+#define BAUD_RATE_B150 150
+#define BAUD_RATE_B200 200
+#define BAUD_RATE_B300 300
+#define BAUD_RATE_B600 600
+#define BAUD_RATE_B1200 1200
+#define BAUD_RATE_B1800 1800
+#define BAUD_RATE_B2400 2400
+#define BAUD_RATE_B4800 4800
+#define BAUD_RATE_B9600 9600
+#define BAUD_RATE_B19200 19200
+#define BAUD_RATE_B38400 38400
+#define BAUD_RATE_B57600 57600
+#define BAUD_RATE_B115200 115200
+#define BAUD_RATE_B230400 230400
+									</pre>
+									<p>上述定义的波特率都需要支持,除非在规格差异表中做特殊说明;未定义的波特率可以进行设置,但是否可以工作由硬件设备决定。</p>
+									<li>工作模式:mode</li>
+									<pre>
+#define UART_MODE_8N1 1 // 8位数据位,无校验
+#define UART_MODE_7E1 2 // 7位数据位,偶校验
+#define UART_MODE_7O1 3 // 7位数据位,奇校验
+									</pre>
+									<p>上述定义的模式都需要支持,除非在规格差异表中做特殊说明;使用未定义的模式将默认使用UART_MODE_8N1模式。</p>
+								</ul>
+							</ul>
+							<h4>3.2.3.2 设置中断服务程序</h4>
+								<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a></p>
+								<p>在中断服务程序中,请先读取UART状态,判断产生中断的原因,再做相应处理。</p>
+								<p>读中断产生后,若没有进行读操作,不会持续产生读中断;若进行了读操作,且仍然可读,将再次产生读中断。</p>
+								<p>写中断产生后,若没有进行写操作,不会持续产生写中断;若进行了写操作,且仍然可写,将再次产生写中断。</p>
+							<h4>3.2.3.3 使能/禁止中断</h4>
+								<p>默认状态为禁止所有中断。</p>
+								<table cellpadding="10" cellspacing="0">
+									<tr>
+										<td>使能<span style="color: red;">读(接收)</span>中断</td>
+										<td>void int uart1_set_r_irq_e(void)</td>
+									</tr>
+									<tr>
+										<td>使能<span style="color: red;">写(发送)</span>中断</td>
+										<td>void uart1_set_w_irq_e(void)</td>
+									</tr>
+									<tr>
+										<td>使能<span style="color: red;">读写(接收/发送)</span>中断</td>
+										<td>void uart1_set_all_irq_e(void)</td>
+									</tr>
+
+									<tr>
+										<td>禁止<span style="color: red;">读(接收)</span>中断</td>
+										<td>void uart1_clr_r_irq_e(void)</td>
+									</tr>
+									<tr>
+										<td>禁止<span style="color: red;">写(发送)</span>中断</td>
+										<td>void uart1_clr_w_irq_e(void)</td>
+									</tr>
+									<tr>
+										<td>禁止<span style="color: red;">读写(接收/发送)</span>中断</td>
+										<td>void uart1_clr_all_irq_e(void)</td>
+									</tr>
+								</table>
+							<h4>3.2.3.4 打开/关闭UART</h4>
+								<ul>
+									<li>打开UART: void uart1_enable(void)</li>
+										<p>打开设备后,可以发送或接收数据;若全局中断和读/写中断打开,注册的中断服务程序将会被调用。</p>
+										<p>打开设备时,接收缓存被清空。</p>
+									<li>关闭UART:void uart1_disable(void)</li>
+										<p>关闭设备后,不能收发数据,也不会产生中断。</p>
+										<p>关闭设备时,发送立即停止,发送缓存被清空。</p>
+								</ul>
+							<h4>3.2.3.5 发送数据</h4>
+								<ul>
+									<li>原型:int uart1_write(void *buf, unsigned int buf_len)</li>
+									<li>参数:</li>
+									<ul>
+										<li>buf: 待发送数据的缓存地址</li>
+										<li>buf_len: 待发送数据字节数</li>
+									</ul>
+									<li>返回值:</li>
+									<ul>
+										<li>>0 实际发送数据字节数</li>
+										<li>-1 参数错误</li>
+										<li>-14 设备未打开</li>
+										<li>-20 设备未就绪</li>
+									</ul>
+								</ul>
+							<h4>3.2.3.6 接收数据</h4>
+								<ul>
+									<li>原型:int uart1_read(void *buf, unsigned int buf_len)</li>
+									<li>参数:</li>
+									<ul>
+										<li>buf: 接收数据的缓存地址</li>
+										<li>buf_len: 缓存字节大小</li>
+									</ul>
+									<li>返回值:</li>
+									<ul>
+										<li>>0 实际发送数据字节数</li>
+										<li>-1 参数错误</li>
+										<li>-14 设备未打开</li>
+										<li>-20 设备未就绪</li>
+									</ul>
+								</ul>
+							<h4>3.2.3.7 读取状态</h4>
+								<ul>
+									<li>原型:unsigned int uart1_get_all_flags()</li>
+									<li>返回值:</li>
+										<p>返回值包含多个状态信息,可以通过位掩码进行判断处理</p>
+										<pre>
+#define UART_FLAG_WRITE_READY 0x04	   //写就绪
+#define UART_FLAG_READ_READY 0x08		//读就绪
+										</pre>
+										<p>也可以通过以下宏帮助处理</p>
+										<pre>
+#define uart_is_r_ready(a) (a & 0x8)	   //判读是否可读
+#define uart_is_w_ready(a) (a & 0x4)	   //判断是否可写
+										</pre>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_flash">3.2.4 DATA FLASH</h3>
+						<div>
+							<p>数据保存到DATA FLASH,掉电后不丢失。存储空间大小依据<a href="#core-spec">计算核心规格</a>中的DATAFLASH定义。</p>
+							<h4>3.2.4.1 使能/关闭DATA FLASH</h4>
+								<ul>
+									<li>使能DATA FLASH: void flash_inside_enable(void)</li>
+										<p>读写数据前,请先使能DATA FLASH。</p>
+									<li>关闭DATA FLASH:void flash_inside_disable(void)</li>
+										<p>读写完毕后,请关闭DATA FLASH,以防误操作。</p>
+								</ul>
+							<h4>3.2.4.2 读取数据</h4>
+								<ul>
+									<li>原型:int flash_inside_read(void *buf, unsigned int len, unsigned int offset)</li>
+									<li>功能:从DATA FLASH设备的offset位置开始读取len字节到buf中</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf: 读取数据的缓存地址</li>
+											<li>len: 缓存字节大小</li>
+											<li>offset:偏移字节量</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>>=0 实际读取到的数据字节数</li>
+												<p>若偏移量加上数据长度超出DATA FLASH最大范围,则只会返回设备有效范围内的数据。</p>
+											<li>-14 设备未使能</li>
+										</ul>
+								</ul>
+							<h4>3.2.4.3 写入数据</h4>
+								<ul>
+									<li>原型:int flash_inside_write(void *buf, unsigned int len, unsigned int offset)</li>
+									<li>功能:将buf中的前len个字节写入到DATA FLASH的offset开始的位置</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf: 待写入数据的缓存地址</li>
+											<li>len: 待写入字节大小</li>
+											<li>offset:偏移字节量</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>>=0 实际写入的数据字节数</li>
+												<p>若偏移量加上数据长度超出DATA FLASH最大范围,则只会写入设备有效范围内的数据。</p>
+											<li>-14 设备未使能</li>
+											<li>-20 设备未就绪</li>
+										</ul>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_wdt">3.2.5 WATCHDOG</h3>
+						<div>
+							<p>当看门狗开启,并设置定时时间后,如果看门狗溢出则重启VSoc.</p>
+							<p>关闭看门狗,则看门狗不起作用。</p>
+							<p>看门狗不使用中断。</p>
+							<h4>3.2.5.1 设置看门狗定时时间</h4>
+								<p>初始看门狗定时间为1000000uS, 即1秒。</p>
+								<ul>
+									<li>原型:void watchdog_set_timeout(unsigned int us)</li>
+									<li>参数:</li>
+									<ul>
+										<li>us:定时时间,单位微秒。</li>
+									</ul>
+								</ul>
+								<p>若看门狗已经启动,且设置的定时时间为0,将停止看门狗。</p>
+								<p>若看门狗已经启动,且设置的定时时间不为0,将重新启动看门狗。</p>
+								<p>最大定时时间为0xFFFFFFFF微秒,约1.19小时</p>
+							<h4>3.2.5.2 获取看门狗定时时间</h4>
+								<ul>
+									<li>原型:unsigned int watchdog_get_timeout()</li>
+									<li>返回值:定时时间,单位微秒。</li>
+								</ul>
+							<h4>3.2.5.3 使能/关闭看门狗</h4>
+								<ul>
+									<li>使能看门狗:void watchdog_enable(void)</li>
+										<p>注意:若看门狗已经使能,再次使能将重新计时。</p>
+									<li>关闭看门狗:void watchdog_disable(void)</li>
+								</ul>
+							<h4>3.2.5.4 喂狗</h4>
+								<ul>
+									<li>原型:watchdog_feed()</li>
+										<p>若看门狗已打开,喂狗操作将使看门狗定时器重新计时。程序应该在看门狗溢出前执行喂狗操作。</p>
+								</ul>
+							<h4>3.2.5.5 运行状态</h4>
+								<ul>
+									<li>原型:unsigned int watchdog_get_status(void)</li>
+									<li>功能:查询看门狗运行状态</li>
+									<li>返回值:</li>
+										<ul>
+											<li>0 看门狗停止</li>
+											<li>1 看门狗已启动计时</li>
+										</ul>
+								</ul>
+						</div>
+					<h3 id="vsoc_device_adc">3.2.6 ADC</h3>
+						<div>
+							<p>VSoc提供了1个12位ADC设备,通道数量由VSOC类型和硬件实现差异确定,具体请参考<a href="#device-spec">外设规格</a>和<a href="#oem-diff">OEM厂商实现的VSOC规格</a>中的ADC部分。</p>
+							<p>程序在使用ADC设备时,请先使能ADC,设置ADC转换通道,设置连续转换次数,启动ADC转换,查询转换完成标志或注册ADC中断服务程序,以在完成ADC转换时读取转换结果。</p>
+							<h4>3.2.6.1 使能/关闭ADC</h4>
+								<ul>
+									<li>使能ADC</li>
+										<ul>
+											<li>原型:void adc_enable()</li>
+										</ul>
+									<li>关闭ADC</li>
+										<ul>
+											<li>原型:void adc_disable()</li>
+										</ul>
+								</ul>
+							<h4>3.2.6.2 设置转换通道</h4>
+								<p>初始通道为通道0。</p>
+								<ul>
+									<li>原型:int adc_set_channel(unsigned int channel)</li>
+									<li>参数:</li>
+										<ul>
+											<li>channel: 待进行ADC转换的通道,范围:[0 ~ (通道数量-1)]</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>0 设置成功</li>
+											<li>-1 设置失败 (参数超出范围)</li>
+											<p>设置规格定义范围内但硬件不支持的通道参数,返回成功。</p>
+										</ul>
+								</ul>
+							<h4>3.2.6.3 设置连续转换次数</h4>
+								<p>初始默认次数为1次。</p>
+								<ul>
+									<li>原型:int adc_set_sample_times(unsigned int n)</li>
+									<li>参数:</li>
+										<ul>
+											<li>n: 设置ADC启动后连续进行转换的次数,范围: [1~16]</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>0 设置成功</li>
+											<li>-1 设置失败 (参数超出范围)</li>
+										</ul>
+								</ul>
+							<h4>3.2.6.4 启动/停止转换</h4>
+								<ul>
+									<li>启动转换</li>
+										<ul>
+											<li>原型:void adc_start()</li>
+												<p style="color:red;">若设置的通道在规格定义范围内但硬件不支持,启动转换将不会成功。</p>
+										</ul>
+									<li>停止转换</li>
+										<ul>
+											<p>在ADC转换期间,可以使用该接口中止ADC转换。</p>
+											<li>原型:void adc_stop()</li>
+										</ul>
+								</ul>
+							<h4>3.2.6.5 查询状态</h4>
+								<ul>
+									<li>原型:unsigned int adc_get_status()</li>
+									<li>返回值:</li>
+										<p>返回值包含多个状态信息,可以通过位掩码进行判断处理</p>
+										<pre>
+#define ADC_STATUS_START_READY		0X01
+#define ADC_STATUS_CONVERTING		0X02
+#define ADC_STATUS_READ_READY		0X04
+										</pre>
+								</ul>
+								<p>当ADC_STATUS_START_READY置位时,ADC才能启动成功。</p>
+								<p>当ADC转换完成后, 标志ADC_STATUS_READ_READY置位,程序可以读取ADC转换结果。</p>
+							<h4>3.2.6.6 读取转换结果</h4>
+								<ul>
+									<li>原型:int adc_read(void *buf, unsigned int len)</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf: 读取数据的缓存地址</li>
+											<p><em>注意:一次ADC转换结果长度为sizeof(unsigned int);若连续转换次数设置为10,则应准备的缓存大小为 10*sizeof(unsigned int)。</em></p>
+											<li>len: 缓存字节大小</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>>0	实际读取到的数据字节数</li>
+											<li>0	转换后的数据已读完</li>
+											<li>-1	参数错误</li>
+											<li>-14	设备未使能</li>
+											<li>-20	ADC转换没有完成</li>
+										</ul>
+								</ul>
+							<h4>3.2.6.7 使用中断</h4>
+								<ul>
+									<li>设置中断服务程序</li>
+										<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a></p>
+										<p>在中断服务程序中,请先查询ADC状态,若ADC_STATUS_READ_READY置位,则程序可以读取ADC转换结果。</p>
+									<li>使能中断:void adc_enable_irq(void)</li>
+									<li>禁止中断:void adc_disable_irq(void)</li>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_pwm">3.2.7 PWM</h3>
+						<div>
+							<p>VSoc提供了若干个PWM输出通道,具体个数参考<a href="#device-spec">外设规格</a>和<a href="#oem-diff">OEM厂商实现的VSOC规格</a>中的PWM部分。</p>
+							<p>每个PWM通道基础精度为1微秒,即时钟频率为1MHz;最大能够产生频率为500KHz的方波。</p>
+							<p>每个PWM通道有两个参数可以设置,一个是频率,一个是高电平占空比。</p>
+							<p>频率设置范围0-500000(Hz),占空比设置范围0-100(%),VSoc会根据频率和占空比输出波形;无法满足参数设置时会输出一个近似方波。
+							<p>PWM设备不使用中断。请先设置输出频率,输出占空比,最后打开设备。以下以PWM0为例说明编程API。</p>
+							<h4>3.2.7.1 设置输出频率</h4>
+								<ul>
+									<li>原型:void pwm0_set_frequency(unsigned int freq)</li>
+									<li>参数:</li>
+									<ul>
+										<li>freq:输出频率,单位Hz,取值范围(0,500000]。设置值超过500KHz时,按照500KHz处理。</li>
+											<p>设置为0时,不生效,不影响当前参数。</p>
+									</ul>
+								</ul>
+							<h4>3.2.7.2 设置占空比</h4>
+								<ul>
+									<li>原型:void pwm0_set_percentage(unsigned int percent)</li>
+									<li>参数:</li>
+									<ul>
+										<li>percent:占空比,取值范围[0,100]。为0时一直输出低电平;为100则一直输出高电平。设置值超过100时,按照100处理。</li>
+									</ul>
+								</ul>
+							<h4>3.2.7.3 打开/关闭PWM</h4>
+								<ul>
+									<li>打开PWM: void pwm0_enable()</li>
+										<p>打开PWM后,PWM波形开始输出。打开PWM以后,程序可以设置新的输出频率和占空比。</p>
+										<p>若PWM已经打开,重新打开PWM不会导致波形重新产生。</p>
+									<li>关闭PWM: void pwm0_disable()</li>
+										<p>关闭PWM后,PWM波形停止输出,并且输出低电平。</p>
+								</ul>
+							<h4>3.2.7.4 查询状态</h4>
+								<ul>
+									<li>获取当前频率:unsigned int pwm0_get_frequency()</li>
+									<li>获取当前占空比:unsigned int pwm1_get_percentage()</li>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_rtc">3.2.8 RTC</h3>
+						<div>
+							<p>
+								Vsoc 提供一个RTC设备,RTC拥有闹钟功能,并提供闹钟中断。<br>
+								当设备open时如果已经设置闹钟定时且闹钟时间大于当前RTC时间,闹钟
+								自动计时并置计时状态位,当闹钟定时时间到达时置闹钟到时状态位,如果
+								程序许可了中断,Vsoc自动执行中断服务程序。当设备关闭时,自动关闭
+								闹钟计时并清空计数状态位并保留闹钟时间设置。如果程序重新设置RTC时间,
+								则闹钟时间也被清空并且关闭定时闹钟。闹钟定时时间是绝对时间,当闹
+								钟定时时间到达RTC停止闹钟计时,如果需要循环闹钟,程序需要在定时到达
+								后设定一个新闹钟。 <br>
+								RTC设备open/close并不会影响RTC自身的计时,只控制闹钟等额外功能。
+							</p>
+							<h4>3.2.8.1 查询RTC时间</h4>
+								<p>查询年月日时分秒的时间信息</p>
+								<ul>
+									<li>原型:int rtc_get_time(struct rtc_data *rtc)</li>
+									<li>参数:rtc 保存查询到的RTC时间</li>
+										<pre>
+struct rtc_data
+{
+	unsigned char year;	//year - 2000
+	unsigned char month;	//1 ~ 12
+	unsigned char day;	//1 ~ 31
+	unsigned char hour;	 //0 ~ 23
+	unsigned char min;	//0 ~ 59
+	unsigned char sec;	//0 ~ 59
+	unsigned char week;	//0 ~ 6 0=星期天
+};
+										</pre>
+									<li>返回值:</li>
+										<ul>
+											<li>0 成功</li>
+											<li>-1 失败,参数错误</li>
+										</ul>
+								</ul>
+							<h4>3.2.8.2 设置RTC时间</h4>
+								<p>设置新的RTC时间,设置成功后将停止闹钟计时,并将闹钟时间清空。</p>
+								<ul>
+									<li>原型:int rtc_set_time(struct rtc_data *rtc)</li>
+									<li>参数:rtc 待设置的RTC时间。rtc->week信息被忽略。</li>
+									<li>返回值:</li>
+										<ul>
+											<li>0 成功</li>
+											<li>-1 失败,参数错误</li>
+											<li>-15 不支持该功能</li>
+										</ul>
+								</ul>
+							<h4>3.2.8.3 查询UTC秒数</h4>
+								<p>查询从1970年到当前时间的秒数。</p>
+								<ul>
+									<li>原型:int rtc_get_utc_time(int64_t *sec)</li>
+									<li>参数:sec 保存获取到的UTC秒数</li>
+									<li>返回值:</li>
+										<ul>
+											<li>0 成功</li>
+											<li>-1 失败,参数错误</li>
+										</ul>
+								</ul>
+							<h4>3.2.8.4 查询RTC闹钟状态</h4>
+								<p>
+								RTC闹钟是一种特殊设备,只要保持VSOC供电或者单独保持RTC电源（具体实现参加具体设备实现）,如果在关机前用户成功开启了RTC闹钟,且在闹钟到时前关机,则在设定时刻到来时RTC闹钟会唤醒VSOC,VSOC重新启动,并且将RTC闹钟运行状态设置成停止,闹钟到时状态置位,闹钟时间保持不变。如果在这个时刻前开机或者重启机器,则RTC闹钟继续处于开启状态,闹钟时间不变。
+								</p>
+								<ul>
+									<li>原型:int rtc_get_alarm_status(void)</li>
+									<li>返回值:RTC闹钟状态</li>
+										<p>状态包括:闹钟正在计时,闹钟计时结束。可以通过位掩码进行判断处理</p>
+										<pre>
+#define RTC_ALARM_FLAG_MASK	 0x1	//闹钟计时结束
+#define RTC_ALARM_RUN_MASK	  0x2	//闹钟正在计时
+										</pre>
+										<p>也可以通过以下宏帮助处理</p>
+										<pre>
+#define rtc_alarm_is_running(status)	(status&RTC_ALARM_RUN_MASK)
+#define rtc_alarm_is_finish(status)	 (status&RTC_ALARM_FLAG_MASK)
+										</pre>
+								</ul>
+							<h4>3.2.8.5 清除RTC闹钟计时结束状态</h4>
+								<p>闹钟计时结束状态置位以后,通过该接口进行清除。</p>
+								<p>闹钟正在计时状态由RTC自动清除和置位,不需要通过接口清除。</p>
+								<ul>
+									<li>原型:void rtc_clr_alarm_status(void)</li>
+								</ul>
+							<h4>3.2.8.6 设置/查询RTC闹钟时间</h4>
+								<ul>
+									<li>设置RTC闹钟时间</li>
+										<ul>
+											<li>原型:int rtc_set_alarm_time(struct rtc_data *alarm)</li>
+											<li>参数:alarm 待设置的闹钟时间</li>
+											<li>返回值:</li>
+											<ul>
+												<li>0 成功</li>
+												<li>-1 失败,参数错误</li>
+											</ul>
+										</ul>
+										<p>设置闹钟成功后,如果闹钟已经使能,则立即覆盖之前的设置并生效。</p>
+										<p>如果设置的闹钟时间在当前时间之前,将停止之前设置的闹钟, <span style="color:blue;">并将清除所有闹钟标志</span>。</p>
+
+									<li>查询RTC闹钟时间</li>
+										<ul>
+											<li>原型:int rtc_get_alarm_time(struct rtc_data *alarm)</li>
+											<li>参数:alarm 保存获取到的闹钟时间</li>
+											<li>返回值:</li>
+											<ul>
+												<li>0 成功</li>
+												<li>-1 失败,参数错误</li>
+											</ul>
+										</ul>
+										<p>如果没有设置过闹钟时间,闹钟时间将被填充为0.</p>
+								</ul>
+							<h4>3.2.8.7 RTC闹钟中断</h4>
+								<ul>
+									<li>使能RTC闹钟中断</li>
+										<ul>
+											<li>原型:void rtc_enable_alarm_irq(void)</li>
+										</ul>
+									<li>禁止RTC闹钟中断</li>
+										<ul>
+											<li>原型:void rtc_disable_alarm_irq(void)</li>
+										</ul>
+									<li>设置RTC闹钟中断服务程序</li>
+										<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a></p>
+								</ul>
+							<h4>3.2.8.8 查询RTC闹钟中断使能状态</h4>
+								<ul>
+									<li>原型:int rtc_get_alarm_irq_setting(void)</li>
+									<li>返回值:</li>
+										<ul>
+											<li>1 RTC闹钟中断使能</li>
+											<li>0 RTC闹钟中断禁止</li>
+										</ul>
+								</ul>
+							<h4>3.2.8.9 使能/禁止RTC闹钟</h4>
+								<p>RTC闹钟没有使能时,不会产生闹钟中断,不会将设备从休眠状态唤醒。</p>
+								<ul>
+									<li>使能RTC闹钟</li>
+										<ul>
+											<li>原型:void rtc_enable(void)</li>
+										</ul>
+									<li>禁止RTC闹钟</li>
+										<ul>
+											<li>原型:void rtc_disable(void)</li>
+										</ul>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_i2c">3.2.9 I2C</h3>
+						<div>
+							<p>VSoc提供2路I2C总线,每个总线下面可以连接多个从设备。</p>
+							<p>I2C设备支持两种中断信号:传输完成/操作失败;</p>
+							<p>当总线传输完成,且传输操作包含读操作时,用户程序可以读取从从设备中读回来的数据;</p>
+							<p>当总线传输完成,用户程序可以发起新的传输操作;</p>
+							<p>当总线操作失败时,需要检查参数是否正确,以及设备是否存在。</p>
+							<p>以下以I2C0为例说明编程API。</p>
+							<h4>3.2.9.1 使能/禁止I2C总线</h4>
+								<ul>
+									<li>使能I2C总线</li>
+									<ul>
+											<li>原型:void i2c0_enable(void)</li>
+									</ul>
+									<li>禁止I2C总线</li>
+									<ul>
+										<li>原型:void i2c0_disable(void)</li>
+									</ul>
+									<p>禁止总线后,传输立即停止。</p>
+								</ul>
+							<h4>3.2.9.2 设置传输参数</h4>
+								<ul>
+									<li>原型:int i2c0_set(unsigned int speed_hz, unsigned int slave_addr, unsigned int slave_addr_10bits)</li>
+									<li>参数:</li>
+										<ul>
+											<li>speed_hz: I2C总线时钟速率</li>
+												<ul>
+													<li>0 100KHz</li>
+													<li>1 400KHz</li>
+													<li>其他值 不支持</li>
+												</ul>
+											<li>slave_addr: 从设备地址</li>
+											<li>slave_addr_10bits: 从设备地址长度</li>
+												<ul>
+													<li>0 7位从设备地址</li>
+													<li>>0 10位从设备地址</li>
+												</ul>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>0 设置成功</li>
+											<li>-1 设置失败,参数错误</li>
+										</ul>
+								</ul>
+							<h4>3.2.9.3 发起I2C传输</h4>
+								<p>使能I2C总线后,才能发起传输操作。</p>
+								<ul>
+									<li>只读传输</li>
+										<p>从I2C设备中连续读取指定长度的数据。设备内部地址以及内部地址处理方式由设备特性决定。</p>
+										<ul>
+											<li>原型:int i2c0_xfer_read(unsigned int rlen)</li>
+											<li>参数:</li>
+												<ul>
+													<li>rlen: 待读取数据的长度, 范围[1,256]</li>
+												</ul>
+											<li>返回值:</li>
+												<ul>
+													<li>0 发起传输正常</li>
+													<li>-14 总线未使能</li>
+													<li>-20 总线正在传输中</li>
+													<li>-1 发起传输失败,参数错误</li>
+												</ul>
+										</ul>
+									<li>只写传输</li>
+										<p>向I2C设备中连续写入指定长度的数据。</p>
+										<ul>
+											<li>原型:int i2c0_xfer_write(unsigned int wlen, unsigned char *wbuf)</li>
+											<li>参数:</li>
+												<ul>
+													<li>wlen: 待写入数据的长度,范围[1,256]</li>
+													<li>wbuf: 待写入数据缓存,非空</li>
+												</ul>
+											<li>返回值:</li>
+												<ul>
+													<li>0 发起传输正常</li>
+													<li>-14 总线未使能</li>
+													<li>-20 总线正在传输中</li>
+													<li>-1 发起传输失败,参数错误</li>
+												</ul>
+										</ul>
+									<li>读写传输</li>
+										<p>从I2C设备中连续读取指定长度的数据后,立即向I2C设备中连续写入指定长度的数据。</p>
+										<ul>
+											<li>原型:int i2c0_xfer_read_write(unsigned int rlen,unsigned int wlen, unsigned char *wbuf)</li>
+											<li>参数:</li>
+												<ul>
+													<li>rlen: 待读取数据的长度, 范围[1,256]</li>
+													<li>wlen: 待写入数据的长度,范围[0,256]</li>
+													<li>wbuf: 待写入数据缓存。若wlen>0, 则该指针非空</li>
+												</ul>
+											<li>返回值:</li>
+												<ul>
+													<li>0 发起传输正常</li>
+													<li>-14 总线未使能</li>
+													<li>-20 总线正在传输中</li>
+													<li>-1 发起传输失败,参数错误</li>
+												</ul>
+										</ul>
+									<li>写读传输</li>
+										<p>向I2C设备中连续写入指定长度的数据后,立即从I2C设备中连续读取指定长度的数据。</p>
+										<ul>
+											<li>原型:int i2c0_xfer_write_read(unsigned int rlen,unsigned int wlen, unsigned char *wbuf)</li>
+											<li>参数:</li>
+												<ul>
+													<li>rlen: 待读取数据的长度, 范围[0,256]</li>
+													<li>wlen: 待写入数据的长度,范围[1,256]</li>
+													<li>wbuf: 待写入数据缓存,非空</li>
+												</ul>
+											<li>返回值:</li>
+												<ul>
+													<li>0 发起传输正常</li>
+													<li>-14 总线未使能</li>
+													<li>-20 总线正在传输中</li>
+													<li>-1 发起传输失败,参数错误</li>
+												</ul>
+										</ul>
+								</ul>
+							<h4>3.2.9.4 查询总线状态</h4>
+								<ul>
+									<li>原型:unsigned int i2c0_get_status(void)</li>
+									<li>返回值:I2C总线状态</li>
+									<p>状态包括:设备忙、传输完成、操作失败,可以通过位掩码进行判断处理</p>
+									<pre>
+#define I2C_STATUS_BUSY			0X01	// 设备忙,正在进行读写操作
+#define I2C_STATUS_XFER_FAILED		0x02	// 操作失败,设备不存在或设备应答出错
+#define I2C_STATUS_XFER_COMPLETED	0x04	// 传输完成
+									</pre>
+								</ul>
+							<h4>3.2.9.5 I2C中断</h4>
+								<p>I2C设备支持传输完成和操作失败中断处理。</p>
+								<ul>
+									<li>使能传输完成中断</li>
+										<ul>
+											<li>原型:void i2c0_enable_irq_xfer_completed(void)</li>
+										</ul>
+									<li>禁止传输完成中断</li>
+										<ul>
+											<li>原型:void i2c0_disable_irq_xfer_completed(void)</li>
+										</ul>
+									<li>使能操作失败中断</li>
+										<ul>
+											<li>原型:void i2c0_enable_irq_xfer_failed(void)</li>
+										</ul>
+									<li>禁止操作失败中断</li>
+										<ul>
+											<li>原型:void i2c0_disable_irq_xfer_failed(void)</li>
+										</ul>
+									<li>设置中断服务程序</li>
+										<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a></p>
+								</ul>
+							<h4>3.2.9.6 读取I2C数据</h4>
+								<p>当发起的只读、读写、写读传输完成后,通过读接口获取数据。</p>
+								<p>该操作为FIFO读。例如,当上一次传输包含读操作10字节且传输成功,则可以分次读取数据,如第一次读取3字节,第二次读取7字节,后续读取将返回长度0。</p>
+								<ul>
+									<li>原型:int i2c0_read(void *buf, unsigned int buf_len)</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf: 接收数据的缓存地址</li>
+											<li>buf_len: 缓存字节大小</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>>=0 实际接收到的数据字节数</li>
+											<li>-14 总线未使能</li>
+											<li>-20 总线正在传输中</li>
+											<li>-32 上一次传输失败</li>
+											<li>-33 上一次传输不包含读操作</li>
+											<li>-1 参数错误</li>
+										</ul>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_spi">3.2.10 SPI</h3>
+						<div>
+							<p>VSoc提供1路或2路SPI总线,支持全双工通信,并支持标准SPI通信的4种模式。</p>
+							<p>当总线传输完成时,SPI总线可产生传输完成中断;若传输操作包含读操作,用户程序可以读取从设备中读回来的数据。</p>
+							<p>总线传输完成后,可以发起新的传输。</p>
+							<p>以下以SPI0为例说明编程API。</p>
+							<h4>3.2.10.1 使能/禁止SPI总线</h4>
+								<ul>
+									<li>使能SPI总线</li>
+										<ul>
+											<li>原型:void spi0_enable(void)</li>
+										</ul>
+									<li>禁止SPI总线</li>
+										<ul>
+											<li>原型:void spi0_disable(void)</li>
+										</ul>
+										<p>禁止总线后,传输立即停止。</p>
+								</ul>
+							<h4>3.2.10.2 发起SPI传输</h4>
+								<p>使能SPI总线后,才能发起传输操作。</p>
+								<ul>
+									<li>原型:int spi0_xfer(unsigned int speed_hz,unsigned int bus_mode,unsigned int cs_no,unsigned int rlen,unsigned int wlen,unsigned char *wbuf)</li>
+									<li>参数:</li>
+										<ul>
+											<li>speed_hz: SPI时钟频率,范围:[1,4000000]</li>
+												<p>允许设置超过4MHz的频率,该参数是否能工作,取决于硬件是否支持,请参考<a href="#oem-diff">OEM厂商实现的VSOC规格</a>中的SPI部分</p>
+											<li>bus_mode: SPI模式,范围[0,3]</li>
+												<p>SPI模式由时钟极性(CPOL)和时钟相位(CPHA)组成:</p>
+												<p>时钟极性CPOL: 即SPI空闲时,时钟信号SCLK的电平（1:空闲时高电平; 0:空闲时低电平）</p>
+												<p>时钟相位CPHA: 即SPI在SCLK第几个边沿开始采样（0:第一个边沿开始; 1:第二个边沿开始）</p>
+												<ul>
+													<li>SPI_BUS_MODE_0 对应CPOL=0,CPHA=0</li>
+													<li>SPI_BUS_MODE_1 对应CPOL=0,CPHA=1</li>
+													<li>SPI_BUS_MODE_2 对应CPOL=1,CPHA=0</li>
+													<li>SPI_BUS_MODE_3 对应CPOL=1,CPHA=1</li>
+												</ul>
+											<li>cs_no: 片选信号编号。</li>
+												<ul>
+													<li>0	使用SPI设备自带的CS管脚。</li>
+													<li>非0	不使用SPI设备自带的CS管脚,可以使用其他GPIO控制外设CS信号。</li>
+												</ul>
+											<li>rlen:待读取数据的长度,范围[0,256]</li>
+											<li>wlen:待写入数据的长度,范围[0,256]</li>
+											<li>wbuf:带写入数据缓存</li>
+												<em>注意:rlen与wlen不能同时为0;wlen>0时,wbuf不能为NULL</em>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>0: 发起传输成功</li>
+											<li>-1: 参数错误</li>
+											<li>-14: 总线未使能</li>
+											<li>-20: 总线正在传输中</li>
+										</ul>
+								</ul>
+							<h4>3.2.10.3 查询SPI总线状态</h4>
+								<ul>
+									<li>原型:unsigned int spi0_get_status(void)</li>
+									<li>返回值:SPI总线状态</li>
+										<p>状态包括:设备忙、传输完成,可以通过位掩码进行判断处理</p>
+										<pre>
+#define SPI_STATUS_BUSY			0X01
+#define SPI_STATUS_XFER_COMPLETED	0X02
+										</pre>
+								</ul>
+							<h4>3.2.10.4 SPI中断</h4>
+								<ul>
+									<li>使能SPI传输完成中断</li>
+										<ul>
+											<li>原型:void spi0_enable_irq(void)</li>
+										</ul>
+									<li>禁止SPI传输完成中断</li>
+										<ul>
+											<li>原型:void spi0_disable_irq(void)</li>
+										</ul>
+									<li>查询SPI传输完成中断使能状态</li>
+										<ul>
+											<li>原型:unsigned int spi0_get_irq(void)</li>
+											<li>返回值:</li>
+												<ul>
+													<li>0 中断禁止</li>
+													<li>1 中断使能</li>
+												</ul>
+										</ul>
+									<li>设置中断服务程序</li>
+										<p>请参考<a href="#vsoc_model_interrupt_api_reg_isr">3.1.5.1 注册/注销中断服务程序</a></p>
+								</ul>
+							<h4>3.2.10.5 读取SPI数据</h4>
+							<p>当发起的传输操作中读取数据长度rlen大于0,则传输完成后,通过读接口获取数据。</p>
+								<ul>
+									<li>原型:int spi0_read(void *buf, unsigned int buf_len)</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf: 接收数据的缓存地址</li>
+											<li>buf_len: 缓存字节大小</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>>=0 实际接收到的数据字节数</li>
+											<li>-14 总线未使能</li>
+											<li>-20 总线正在传输中</li>
+											<li>-32 总线未发起传输</li>
+											<li>-1 参数错误</li>
+										</ul>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_ota">3.2.11 OTA升级</h3>
+						<div>
+							<p>用户程序可以使用OTA升级接口对VSoc应用程序进行升级;升级数据由用户程序通过网络或本地接口获取。</p>
+							<p>升级时,用户可以保存16字节的用户自定义数据。</p>
+							<h4>3.2.11.1 启动OTA升级</h4>
+								<p>启动OTA升级流程,并返回OTA状态、用户数据、OTA数据的尺寸信息;如果OTA未启动则初始化OTA,初始化后用户数据为16字节的0。</p>
+								<ul>
+									<li>原型:int ota_start(struct ota_user_data *ud,size_t *flen)</li>
+									<li>参数:</li>
+										<ul>
+											<li>user_data :用户数据指针,如果不为空则返回用户数据。</li>
+											<li>flen : OTA数据尺寸指针,如果不为空则返回OTA数据长度</li>
+										</ul>
+									<li>返回值: 返回当前OTA状态或者错误</li>
+										<ul>
+											<li> 0 OTA数据更新状态,可以向OTA内追加更新数据</li>
+											<li> 1 OTA数据更新已经完成状态,等待将OTA数据替换用户应用程序</li>
+											<li>-1 系统故障</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.2 更新OTA数据</h4>
+								<p>将数据追加到OTA数据中。</p>
+								<ul>
+									<li>原型:int ota_update(void *buf,size_t len)</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf:数据缓存地址,不可为空</li>
+											<li>len:要写入的数据长度(Byte)>0</li>
+										</ul>
+									<li>返回值:返回添加数据结果或者错误</li>
+										<ul>
+											<li> 0 成功添加数据</li>
+											<li>-1 系统故障</li>
+											<li>-2 OTA未启动</li>
+											<li>-3 IO故障</li>
+											<li>-4 OTA数据错误</li>
+											<li>-5 OTA数据超出VSOC ROM尺寸</li>
+											<li>-6 OTA数据不是兼容的用户程序</li>
+											<li>-7 buf指向NULL或len等于0</li>
+											<li>-8 OTA数据更新已经完成,禁止追加数据</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.3 完成OTA数据更新</h4>
+								<p>完成OTA数据更新,不允许继续向OTA追加数据。</p>
+								<ul>
+									<li>原型:int ota_finish(void)</li>
+									<li>返回值:返回完成操作结果或者错误</li>
+										<ul>
+											<li> 0 OTA数据更新完成</li>
+											<li>-1 系统故障</li>
+											<li>-2 OTA未启动</li>
+											<li>-3 IO故障</li>
+											<li>-4 OTA数据错误</li>
+											<li>-5 OTA数据尺寸过小</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.4 应用OTA数据</h4>
+								<p>将OTA数据替换用户应用程序。重新启动VSoc或系统后,将运行升级后的应用程序。</p>
+								<ul>
+									<li>原型:int ota_use(void)</li>
+									<li>返回值: 返回应用OTA数据结果或者错误</li>
+										<ul>
+											<li> 0 成功应用OTA数据</li>
+											<li>-1 系统故障</li>
+											<li>-2 OTA未启动</li>
+											<li>-3 IO故障</li>
+											<li>-4 OTA数据错误</li>
+											<li>-5 OTA数据尺寸过小</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.5 查询OTA状态</h4>
+								<p>查询OTA状态、用户数据、OTA数据的尺寸信息。</p>
+								<ul>
+									<li>原型:int ota_get_status(struct ota_user_data *ud, size_t *flen)</li>
+									<li>参数:</li>
+										<ul>
+											<li>user_data :用户数据指针,如果不为空则返回用户数据。</li>
+											<li>flen : OTA数据尺寸指针,如果不为空则返回OTA数据长度。</li>
+										</ul>
+									<li>返回值: 返回OTA状态或者错误</li>
+										<ul>
+											<li> 0 OTA数据更新状态,可以向OTA内追加更新数据</li>
+											<li> 1 OTA数据更新已经完成状态,等待将OTA数据替换用户应用程序</li>
+											<li>-1 系统故障</li>
+											<li>-2 OTA未启动</li>
+											<li>-3 IO故障</li>
+											<li>-4 OTA数据错误</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.6 读取OTA数据</h4>
+								<p>完成OTA数据更新后,可以回读OTA数据进行校验,以确保OTA数据正确。</p>
+								<ul>
+									<li>原型:int get_ota_data(void* buf, size_t len, size_t offset)</li>
+									<li>参数:</li>
+										<ul>
+											<li>buf:数据缓存区地址,不可为空。</li>
+											<li>len:读取数据长度(Byte)>0</li>
+											<li>offset: 读数据的起始地址(Byte),不能超过OTA数据长度</li>
+										</ul>
+									<li>返回值: 读取数据结果或错误</li>
+										<ul>
+											<li> 0 成功读取OTA数据</li>
+											<li>-1 系统故障</li>
+											<li>-2 OTA未启动</li>
+											<li>-3 IO故障</li>
+											<li>-4 OTA数据错误</li>
+											<li>-5 offset超过OTA数据长度</li>
+											<li>-7 buf指向NULL或len等于0</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.7 更新OTA用户数据</h4>
+								<p>启动OTA升级后,用户可以随时更新用户数据。</p>
+								<ul>
+									<li>原型:int ota_set_user_data(struct ota_user_data *ud)</li>
+									<li>参数:</li>
+										<ul>
+											<li>user_data :用户数据指针,不可为空</li>
+										</ul>
+									<li>返回值:返回更新用户数据结果或错误</li>
+										<ul>
+											<li> 0 成功更新OTA中用户数据</li>
+											<li>-1 系统故障</li>
+											<li>-2 OTA未启动</li>
+											<li>-3 IO故障</li>
+											<li>-4 OTA数据错误</li>
+											<li>-7 user_data指向NULL</li>
+										</ul>
+								</ul>
+							<h4>3.2.11.8 停止OTA升级</h4>
+								<p>升级过程中,可以通过该接口停止升级。</p>
+								<ul>
+									<li>原型:int ota_destroy(void)</li>
+									<li>返回值:0</li>
+								</ul>
+							<h4>3.2.11.9 OTA断点续传</h4>
+								<p>OTA升级过程中断后重新启动时,OTA中断前的OTA数据被保留,用户可以在上次的进度上继续更新。</p>
+								<ul>
+									<li>OTA处于数据更新状态,OTA重新启动后,会保留之前OTA数据,可以通过OTA数据尺寸来得知上次更新进度并继续更新。</li>
+									<li>OTA数据更新完成后,OTA重新启动后,会保留之前OTA数据,不能再向OTA数据中追加内容,但可以应用OTA数据更新用户程序版本。</li>
+								</ul>
+						</div>
+
+					<h3 id="vsoc_device_pm" style="color: blue;">3.2.12 电源管理</h3>
+						<div>
+							<h4>3.2.12.1 关机/重启</h4>
+								<ul>
+									<li>原型:void shutdown(int mode)</li>
+									<li>参数:</li>
+										<ul>
+											<li>mode:</li>
+												<ul>
+													<li>0 重启VSoc</li>
+													<li>1 重启VSoc和系统</li>
+													<li>其他值 关机</li>
+													<p>关机状态下,RTC时间继续计时;若设置RTC闹钟,则闹钟到时将启动系统运行。</p>
+												</ul>
+										</ul>
+								</ul>
+							<h4>3.2.12.2 进入WFI模式</h4>
+								<p>VSoc进入等待事件模式,虚拟处理器休眠;任意io变化事件,都会唤醒VSoc虚拟处理器。</p>
+								<p>原型:void wfi(void);</p>
+						</div>
+
+					<h3 id="vsoc_device_net">3.2.13 蜂窝通信网络设备</h3>
+						<div>
+							<p>当VSoc设备的<a href="#c2-host">宿主机类型</a>为蜂窝通信模块,且<a href="#c2-inside">内置设备类型</a>为融合设备或为独立+融合设备时,VSoc将内置一个蜂窝通信网络设备供用户使用,以下简称网络设备。</p>
+							<p>网络设备提供DNS域名解析服务,若解析成功将返回一个IPV4地址。</p>
+							<p>通过网络设备可以建立socket连接,连接类型支持TCP, UDP和SSL;最大socket连接数量在外设规格中定义。</p>
+							<h4>3.2.13.1 打开/关闭网络设备</h4>
+								<ul>
+									<li>打开网络设备: void net_open(void)</li>
+										<p>网络设备打开之后,才能正常使用下述网络功能。</p>
+										<p>打开网络设备时,将自动激活网络。</p>
+									<li>关闭网络设备: void net_close(void)</li>
+										<p>关闭网络设备后,将自动关闭所有socket连接,并去激活网络。</p>
+								</ul>
+							<h4>3.2.13.2 激活/去激活网络</h4>
+								<ul>
+									<li>激活: void net_activate(void)</li>
+										<p>打开网络设备时,会自动激活网络;</p>
+										<p style="color: red;">激活网络后,需等待激活完成。</p>
+										<p>如果网络已被去激活,则可以使用激活功能重新激活网络。</p>
+									<li>去激活: void net_deactivate(void)</li>
+										<p>去激活网络后不能使用网络功能。已建立的socket连接将进入CLOSED状态,无法收发数据;DNS功能无法使用。</p>
+										<p>去激活后,可以查询设备和socket状态,可以设置APN。</p>
+								</ul>
+							<h4>3.2.13.3 查询网络设备状态</h4>
+								<ul>
+									<li>原型: union net_device_dev_status net_get_dev_status(void);</li>
+									<li id="c3-net-status">网络状态</li>
+										<ul>
+											<li>SIM卡状态</li>
+												<ul>
+													<li>sim_change</li>
+														<ul>
+															<li>1: SIM卡状态改变</li>
+															<li>0: SIM卡状态未改变</li>
+														</ul>
+													<li>sim_status</li>
+														<ul>
+															<li>1: SIM卡已插入并可正常使用</li>
+															<li>0: SIM卡未插入或不能正常使用</li>
+														</ul>
+												</ul>
+											<li>网络注册状态</li>
+												<ul>
+													<li>reg_change</li>
+														<ul>
+															<li>1: 网络注册状态改变</li>
+															<li>0: 网络注册状态未改变</li>
+														</ul>
+													<li>reg_status</li>
+														<ul>
+															<li>0: 网络注册失败</li>
+															<li>1: 网络注册进行中</li>
+															<li>2: 网络已注册成功</li>
+														</ul>
+												</ul>
+											<li>网络附着状态</li>
+												<ul>
+													<li>attach_change</li>
+														<ul>
+															<li>1: 网络附着状态改变</li>
+															<li>0: 网络附着状态未改变</li>
+														</ul>
+													<li>attach_status</li>
+														<ul>
+															<li>1: 网络已附着</li>
+															<li>0: 网络未附着</li>
+														</ul>
+												</ul>
+											<li>网络激活状态</li>
+												<ul>
+													<li>active_change</li>
+														<ul>
+															<li>1: 网络激活状态改变</li>
+															<li>0: 网络激活状态未改变</li>
+														</ul>
+													<li>active_status</li>
+														<ul>
+															<li>1: 网络已激活</li>
+															<li>0: 网络未激活</li>
+														</ul>
+												</ul>
+											<li>接收信号强度: rssi</li>
+												<ul>
+													<li>0: 小于-113 dBm</li>
+													<li>1: -111 dBm</li>
+													<li>2~30: -109 ~ -53 dBm</li>
+													<li>31: 大于-51 dBm</li>
+													<li>99: 未知或不可检测</li>
+												</ul>
+											<li>误码率: ber</li>
+												<ul>
+													<li>0~7: 误码率百分比</li>
+													<li>99: 未知或不可检测</li>
+												</ul>
+											<li>DNS域名解析状态</li>
+												<ul>
+													<li>dns_change</li>
+													<ul>
+														<li>1: 解析状态改变</li>
+														<li>0: 解析状态未改变</li>
+													</ul>
+													<p>通过<a href="#c3-dns-status">查询DNS状态</a>以获得详细状态。</p>
+												</ul>
+											<li>socket连接状态</li>
+												<ul>
+													<p>以下<span style="color: red;">x</span>为0~7,分别代表8路socket</p>
+													<li>sock_<span style="color: red;">x</span>_state_change</li>
+														<ul>
+															<li>1: 该连接状态改变</li>
+															<li>0: 该连接状态未改变</li>
+															<p>状态包括:sock<span style="color: red;">x</span>_[status|read_ready|write_ready|error]</p>
+														</ul>
+												</ul>
+
+										</ul>
+								</ul>
+							<h4>3.2.13.4 查询socket状态</h4>
+								<p>查询指定socket的状态。</p>
+								<ul>
+									<li>原型: union net_device_socket_status socket_status(unsigned int id)</li>
+									<li>参数:</li>
+										<ul>
+											<li>id: 0~7 指定socket通道号。如果id>7,将按照id为0处理。</li>
+										</ul>
+									<li id="c3-socket-status">socket状态</li>
+										<ul>
+											<li>连接类型: type</li>
+												<pre>
+#define SOCKET_TYPE_TCP		0
+#define SOCKET_TYPE_UDP		1
+#define SOCKET_TYPE_SSL		2
+												</pre>
+											<li>连接状态: status</li>
+												<p>不同socket连接类型具有不同的状态:</p>
+												<ul>
+													<li>TCP连接类型</li>
+													<pre>
+#define SOCKET_TCP_STATUS_IDLE		0
+#define SOCKET_TCP_STATUS_READY		1
+#define SOCKET_TCP_STATUS_CONNECTING	2
+#define SOCKET_TCP_STATUS_CONNECTED	3
+#define SOCKET_TCP_STATUS_CLOSED	4
+#define SOCKET_TCP_STATUS_CLOSING	5
+#define SOCKET_TCP_STATUS_BINDED	6
+#define SOCKET_TCP_STATUS_LISTEN	7
+													</pre>
+													<li>UDP连接类型</li>
+													<pre>
+#define SOCKET_UDP_STATUS_IDLE		0
+#define SOCKET_UDP_STATUS_READY		1
+#define SOCKET_UDP_STATUS_BINDED	2
+#define SOCKET_UDP_STATUS_RUN		3
+#define SOCKET_UDP_STATUS_ERR		4
+													</pre>
+													<li>SSL连接类型</li>
+													<pre>
+#define SOCKET_SSL_STATUS_IDLE			0
+#define SOCKET_SSL_STATUS_READY			1
+#define SOCKET_SSL_TCP_STATUS_CONNECTING	2
+#define SOCKET_SSL_TCP_STATUS_CONNECTED		3
+#define SOCKET_SSL_STATUS_CONNECTING		4
+#define SOCKET_SSL_STATUS_CONNECTED		5
+#define SOCKET_SSL_STATUS_CLOSED		6
+#define SOCKET_SSL_STATUS_CLOSING		7
+													</pre>
+
+												</ul>
+
+											<li>可接收数据: read_ready</li>
+												<ul>
+													<li>1: 该连接有数据可接收</li>
+													<li>0: 该连接无数据可接收</li>
+												</ul>
+											<li>可发送数据: write_ready</li>
+												<ul>
+													<li>1: 该连接可发送数据</li>
+													<li>0: 该连接不可发送数据</li>
+												</ul>
+											<li>错误: error</li>
+												<ul>
+													<li>1: 该连接出现错误</li>
+													<li>0: 该连接未出现错误</li>
+													<p>当连接出现错误并被用户程序处理后,可以通过成功的发送或接收数据操作将error标志清除。</p>
+												</ul>
+										</ul>
+								</ul>
+							<h4 id="c3-net-irq-status">3.2.13.5 查询网络设备和socket状态</h4>
+								<p>该接口可一次性读取网络设备状态,以及所有socket的状态信息,并将<span style="color: red;">清除中断标志(irq_pend)和状态改变标志(_change)</span></p>
+								<ul>
+									<li>原型: void net_get_status(struct net_device_status *status);</li>
+									<li>参数:</li>
+										<ul>
+											<li>status: 指向保存查询结果的内存地址。</li>
+										</ul>
+								</ul>
+								<p>结构体中dev_status字段的定义,与联合体union net_device_dev_status的的定义一致,请参考<a href="#c3-net-status">网络状态</a>。</p>
+								<p>结构体中sock_status字段的定义,与联合体union net_device_socket_status的定义一致,请参考<a href="#c3-socket-status">socket状态</a>。</p>
+
+							<h4>3.2.13.6 设置APN</h4>
+								<p>设置APN前,需去激活网络并等待去激活完成;设置APN; 最后重新激活网络并等待激活完成。</p>
+								<ul>
+									<li>原型: int net_set_apn(char *apn);</li>
+									<li>参数:</li>
+										<ul>
+											<li>apn: APN名称,字符串。字符串长度应小于32字节 。</li>
+										</ul>
+									<li>返回值:</li>
+										<ul>
+											<li>0: 设置成功</li>
+											<li>-1: 设置失败</li>
+										</ul>
+								</ul>
+							<h4 id="c3-dns-status">3.2.13.7 查询DNS状态</h4>
+								<ul>
+									<li>原型: uint32_t net_dns_get_status(void);</li>
+									<li>返回值</li>
+										<pre>
+#define DNS_STATUS_IDLE 		0
+#define DNS_STATUS_RUNNING		1
+#define DNS_STATUS_FINISHED		2
+										</pre>
+								</ul>
+							<h4>3.2.13.8 请求DNS域名解析</h4>
+								<p>当DNS状态为IDLE时,用户可通过该接口请求域名解析。</p>
+								<ul>
+									<li>原型: int net_dns_start(char *name);</li>
+									<li>参数</li>
+										<ul>
+											<li>name: 域名字符串。字符串长度应小于128字节</li>
+										</ul>
+									<li>返回值</li>
+										<ul>
+											<li>0: 请求成功</li>
+											<li>-1: 参数错误</li>
+											<li>-40: DNS处于RUNNING状态,不能请求新的域名解析</li>
+											<li>-41: DNS处于FINISHED状态,在解析结果被获取以前,不能请求新的域名解析</li>
+										</ul>
+										<p>请求成功后,DNS状态变为RUNNING。</p>
+								</ul>
+							<h4>3.2.13.9 获取DNS域名解析结果</h4>
+								<p>当DNS完成解析后,状态变为FINISHED,用户可通过该接口获取解析结果。</p>
+								<ul>
+									<li>原型: uint32_t net_dns_get_result(void);</li>
+									<li>返回值</li>
+										<ul>
+											<li> >0: ipv4地址</li>
+											<li> 0: 无法解析或解析失败</li>
+										</ul>
+										<p>获取DNS解析结果后,DNS状态变为IDLE。</p>
+								</ul>
+							<h4 id="c3-net-irq-enable">3.2.13.10 查询中断使能状态</h4>
+								<ul>
+									<li>原型: uint32_t net_get_irq_mask(void);</li>
+									<li>返回值</li>
+										<ul>
+											使能位定义与结构体struct net_device_irq_bits定义一致。
+											<li>sim_irq_enable</li>
+												<ul>
+													<li>1: 允许SIM卡状态改变时产生中断</li>
+													<li>0: 不允许SIM卡状态改变时产生中断</li>
+												</ul>
+											<li>req_irq_enable</li>
+												<ul>
+													<li>1: 允许网络注册状态改变时产生中断</li>
+													<li>0: 不允许网络注册状态改变时产生中断</li>
+												</ul>
+											<li>attach_irq_enable</li>
+												<ul>
+													<li>1: 允许网络附着状态改变时产生中断</li>
+													<li>0: 不允许网络附着状态改变时产生中断</li>
+												</ul>
+											<li>active_irq_enable</li>
+												<ul>
+													<li>1: 允许网络激活状态改变时产生中断</li>
+													<li>0: 不允许网络激活状态改变时产生中断</li>
+												</ul>
+											<li>sock<span style="color: red;">x</span>_read_enable</li>
+											<p><span style="color: red;">x</span>为0~7,分别代表8路socket。</p>
+												<ul>
+													<li>1: 允许socket连接可读时产生中断</li>
+													<li>0: 不允许socket连接可读时产生中断</li>
+												</ul>
+											<li>sock<span style="color: red;">x</span>_write_enable</li>
+												<ul>
+													<li>1: 允许socket连接可写时产生中断</li>
+													<li>0: 不允许socket连接可写时产生中断</li>
+												</ul>
+											<li>sock<span style="color: red;">x</span>_connect_finished</li>
+												<ul>
+													<li>1: 允许socket连接connect成功或socket连接产生错误时产生中断</li>
+													<li>0: 不允许socket连接connect成功或socket连接产生错误时产生中断</li>
+												</ul>
+											<li>dns_finished</li>
+												<ul>
+													<li>1: 允许DNS解析完成时产生中断</li>
+													<li>0: 不允许DNS解析完成时产生中断</li>
+												</ul>
+										</ul>
+								</ul>
+							<h4>3.2.13.11 使能/禁止中断</h4>
+								<ul>
+									<li>使能中断: void net_set_irq_mask(uint32_t mask);</li>
+										<ul>
+											<li>参数</li>
+												<ul>
+													<li>mask: 使能中断位掩码;位定义同<a href="#c3-net-irq-enable">中断使能状态</a>。使能全部中断时,设置参数为0x1FFFFFFF.</li>
+												</ul>
+										</ul>
+									<li>禁止中断: void net_clr_irq_mask(uint32_t mask);</li>
+										<ul>
+											<li>参数</li>
+												<ul>
+													<li>mask: 禁止中断位掩码;位定义同<a href="#c3-net-irq-enable">中断使能状态</a>。禁止全部中断时,设置参数为0x1FFFFFFF.</li>
+												</ul>
+										</ul>
+								</ul>
+							<h4>3.2.13.12 查询中断源</h4>
+								<p>产生中断后,通过查询中断源,可以确定引起此次中断的原因。中断源通过<a href="#c3-net-irq-status">查询网络设备和socket状态</a>清除。</p>
+								<ul>
+									<li>原型: uint32_t net_get_irq_pend(void);</li>
+										<p>中断源位定义同<a href="#c3-net-irq-enable">中断使能状态</a>。</p>
+								</ul>
+
+							<h4>3.2.13.13 创建socket (备注:SSL类型的socket最多只能创建6个,TCP和UDP的socket最多可以创建8个 ) </h4>
+								<ul>
+									<li>原型: int net_socket_create(uint8_t id, uint8_t type);</li>
+									<li>参数</li>
+										<ul>
+											<li>id: socket通道号, 0~7</li>
+											<li>type</li>
+												<pre>
+#define SOCKET_TYPE_TCP		0
+#define SOCKET_TYPE_UDP		1
+#define SOCKET_TYPE_SSL		2
+												</pre>
+										</ul>
+									<li>返回值</li>
+									<ul>
+										<li>0: 创建成功</li>
+										<li>-1: 参数错误</li>
+										<li>-35: socket已创建</li>
+									</ul>
+								</ul>
+							<h4>3.2.13.14 绑定socket端口号</h4>
+								<p>当前VSoc只有一个网络设备,绑定操作即为绑定端口号。</p>
+								<p>如果未绑定端口号,网络设备工作时将使用自动分配的端口号。</p>
+								<p>注意:网络设备激活后获得的IP地址可能是局域网地址,当socket作为client与外部通信时,外部看到的通信IP端口可能与网络设备的IP端口不一致,这是正常现象。另外,SSL类型的socket目前不支持绑定操作,需要在连接时就指定端口号。</p>
+								<ul>
+									<li>原型: int net_socket_bind(uint8_t id, struct sock_in_addr *addr, uint8_t addr_size);</li>
+									<li>参数</li>
+										<ul>
+											<li>id: socket通道号, 0~7</li>
+											<li>addr: 指向待绑定的IP地址和端口号;IP地址请填充为0,端口号范围[1024,65535]</li>
+											<li>addr_size: addr指向的内存大小,正常为sizeof(struct sock_in_addr)</li>
+										</ul>
+									<li>返回值</li>
+										<ul>
+											<li>0: 绑定成功</li>
+											<li>-1: 参数错误</li>
+											<li>-36: socket还未创建</li>
+											<li>-49: 已绑定或已自动绑定</li>
+											<li>-50: 绑定失败</li>
+										</ul>
+								</ul>
+							<h4>3.2.13.15 请求建立socket连接</h4>
+								<p>当socket类型为TCP或者SSL,且作为client连接远程server时,需要先建立连接,然后才能发送和接收数据。</p>
+								<p>请求建立连接后, 通过使能connect_finished中断,且检查socket状态是否已CONNECTED,以确认连接是否成功。</p>
+								<ul>
+									<li>原型: int net_socket_connect(uint8_t id, struct sock_in_addr *addr, uint8_t addr_size);</li>
+									<li>参数</li>
+										<ul>
+											<li>id: socket通道号, 0~7</li>
+											<li>addr: 指向待连接端的IP地址和端口号</li>
+											<li>addr_size: addr指向的内存大小,正常为sizeof(struct sock_in_addr)</li>
+										</ul>
+									<li>返回值</li>
+										<ul>
+											<li>0: 请求连接成功</li>
+											<li>-1: 参数错误</li>
+											<li>-37: socket类型不为TCP或者SSL,不支持connect操作</li>
+											<li>-36: socket还未创建</li>
+											<li>-43: 已经请求连接,当前正在连接过程中</li>
+											<li>-44: 已经请求连接,当前已连接成功</li>
+											<li>-45: socket处于CLOSED状态</li>
+											<li>-46: socket正在关闭过程中</li>
+											<!-- <li>-34: 网络未激活</li> -->
+											<li>-33: 请求连接失败</li>
+										</ul>
+								</ul>
+							<h4>3.2.13.16 socket发送数据</h4>
+								<ul>
+									<li>TCP或者SSL类型的socket发送数据</li>
+										<p>socket连接成功后,且为可发送状态时,才能正常发送数据。</p>
+										<ul>
+											<li>原型: int net_socket_send(uint8_t id, void *buf, uint32_t len)</li>
+											<li>参数</li>
+												<ul>
+													<li>id: socket通道号, 0~7</li>
+													<li>buf: 待发送数据的内存地址; 不应为空</li>
+													<li>len: 代发送数据的字节长度;应>0</li>
+												</ul>
+											<li>返回值</li>
+												<ul>
+													<li>>0: 实际发送字节长度</li>
+													<li>-1: 参数错误</li>
+													<li>-36: socket还未创建</li>
+													<li>-37: socket类型不为TCP,不支持send操作</li>
+													<li>-45: socket处于CLOSED状态</li>
+													<li>-47: socket还未建立连接</li>
+													<li>-34: socket暂时不可发送</li>
+													<li>-38: 发送失败</li>
+												</ul>
+										</ul>
+
+									<li>UDP类型的socket发送数据</li>
+										<p>socket为可发送状态时,才能正常发送数据。</p>
+										<ul>
+											<li>原型: int net_socket_sendto(uint8_t id, void *buf, uint32_t len, struct sock_in_addr *addr, uint8_t addr_size)</li>
+											<li>参数</li>
+												<ul>
+													<li>id: socket通道号, 0~7</li>
+													<li>buf: 待发送数据的内存地址; 不应为空</li>
+													<li>len: 代发送数据的字节长度;应>0</li>
+													<li>addr: 指向接收端的IP地址和端口号; 不应为空</li>
+													<li>addr_size: addr指向的内存大小,正常为sizeof(struct sock_in_addr)</li>
+												</ul>
+											<li>返回值</li>
+												<ul>
+													<li>>0: 实际发送字节长度</li>
+													<li>-1: 参数错误</li>
+													<li>-36: socket还未创建</li>
+													<li>-37: socket类型不为UDP,不支持sendto操作</li>
+													<li>-34: socket暂时不可发送</li>
+													<li>-38: 发送失败</li>
+												</ul>
+										</ul>
+								</ul>
+							<h4>3.2.13.17 socket接收数据</h4>
+								<ul>
+									<li>TCP或者SSL类型的socket接收数据</li>
+										<p>socket连接成功后,且为可接收状态时,才能正常接收数据。</p>
+										<ul>
+											<li>原型: int net_socket_recv(uint8_t id, void *buf, uint32_t len)</li>
+											<li>参数</li>
+												<ul>
+													<li>id: socket通道号, 0~7</li>
+													<li>buf: 保存接收数据的内存地址; 不应为空</li>
+													<li>len: 内存字节长度;应>0</li>
+												</ul>
+											<li>返回值</li>
+												<ul>
+													<li>>0: 实际接收字节长度</li>
+													<li>-1: 参数错误</li>
+													<li>-36: socket还未创建</li>
+													<li>-37: socket类型不为TCP或者SSL,不支持recv操作</li>
+													<li>-47: socket还未建立连接</li>
+													<li>-34: socket暂时不可接收</li>
+													<li>-42: 接收失败</li>
+													<li>0: 连接断开,socket处于CLOSED状态</li>
+												</ul>
+										</ul>
+									<li>UDP类型的socket接收数据</li>
+										<p>socket为可接收状态时,才能正常接收数据。</p>
+										<ul>
+											<li>原型: int net_socket_recvfrom(uint8_t id, void *buf, uint32_t len, struct sock_in_addr *addr, uint8_t addr_size)</li>
+											<li>参数</li>
+												<ul>
+													<li>id: socket通道号, 0~7</li>
+													<li>buf: 保存接收数据的内存地址; 不应为空</li>
+													<li>len: 内存字节长度;应>0</li>
+													<li>addr: 指向保存发送端的IP地址和端口号的内存地址; 不应为空</li>
+													<li>addr_size: addr指向的内存大小,正常为sizeof(struct sock_in_addr)</li>
+												</ul>
+											<li>返回值</li>
+												<ul>
+													<li>>0: 实际接收字节长度</li>
+													<li>-1: 参数错误</li>
+													<li>-36: socket还未创建</li>
+													<li>-37: socket类型不为UDP,不支持recvfrom操作</li>
+													<li>-34: socket暂时不可接收</li>
+													<li>-42: 接收失败</li>
+												</ul>
+										</ul>
+
+								</ul>
+							<h4>3.2.13.18 关闭socket</h4>
+								<p>关闭socket后,进入IDLE状态,立即停止数据的发送和接收,该通道socket不再产生中断事件。</p>
+								<ul>
+									<li>原型: int net_ctl_socket_close(uint8_t id);</li>
+									<li>参数</li>
+										<ul>
+											<li>id: socket通道号, 0~7</li>
+										</ul>
+									<li>返回值</li>
+										<ul>
+											<li>0: 关闭成功</li>
+											<li>-1: 参数错误</li>
+											<li>-36: socket还未创建</li>
+										</ul>
+								</ul>
+
+						</div>
+
+					<h3 id="vsoc_device_fs">3.2.14 文件系统</h3>
+						<div>
+							<p>当VSoc的类型为LBSV时,VSoc将内置一个文件管理系统供用户使用,以下简称文件系统。</p>
+							<p>文件系统提供最大512k字节的磁盘空间,最多可以创建16个文件。</p>
+							<p>通过文件系统用户可以长久保存私有数据信息。</p>
+							<p>接口头文件sp_fs.h 。</p>
+							<h4>3.2.14.1 打开文件</h4>
+								<ul>
+									<li>打开文件接口: int fs_open_file(char *name, int flag)</li>
+										<p>参数___name, 要打开的文件名。</p>
+										<p>参数flag,可以是如下标识:</p>
+										<p>FS_OPEN_FLAG_RD</p>
+										<p>FS_OPEN_FLAG_WR</p>
+										<p>FS_OPEN_FLAG_CREAT</p>
+										<p>FS_OPEN_FLAG_TRUNC</p>
+										<p>返回文件描述符fd, 若返回数值小于0则打开失败</p>
+								</ul>
+							<h4>3.2.14.2 关闭文件</h4>
+								<ul>
+									<li>关闭文件接口: int fs_close_file(int fd)</li>
+										<p>参数fd, 文件描述符。</p>
+										<p>返回数值等于0,文件正常关闭</p>
+										<p>返回数值小于0,文件关闭时发生异常</p>
+								</ul>
+
+							<h4>3.2.14.3 删除文件</h4>
+								<ul>
+									<li>删除文件接口:  int fs_del_file(char *name) </li>
+										<p>参数name, 要删除的文件名。</p>
+										<p>返回数值等于0,文件正常删除</p>
+										<p>返回数值小于0,文件删除时发生异常</p>
+								</ul>
+
+							<h4>3.2.14.4 重定位文件当前位置即seek操作</h4>
+								<ul>
+									<li>seek操作接口: fs_seek_file(int fd, int seektype, int position) </li>
+										<p>参数fd, 文件描述符。</p>
+										<p>参数seektype, 有 FS_SEEK_CUR,FS_SEEK_SET, FS_SEEK_END </p>
+										<p>position, 文件指针位置 </p>
+								</ul>
+
+							<h4>3.2.14.5 文件读操作</h4>
+								<ul>
+									<li>读操作接口: int fs_read_file(int fd, char *fs_read_buffer, unsigned int buffersize) </li>
+										<p>参数fd, 文件描述符。</p>
+										<p>参数fs_read_buffer, 读出时数据存放的buffer </p>
+										<p>buffersize, buffer大小 </p>
+										<p>返回实际读出的字节数;若数值小于0,读操作异常。/p>
+								</ul>
+
+							<h4>3.2.14.6 文件写操作</h4>
+								<ul>
+									<li>写操作接口: int fs_write_file( int fd, char *buff_w, unsigned int buffersize) </li>
+										<p>参数fd, 文件描述符。</p>
+										<p>参数buff_w, 存放要写到文件的数据 </p>
+										<p>buffersize, 要写入文件的数据个数 </p>
+										<p>返回实际写入的字节数;若返回数值小于0,写操作异常。 /p>
+								</ul>
+
+							<h4>3.2.14.7 查询文件状态 </h4>
+								<ul>
+									<li>查询文件状态操作接口: struct file_status  fs_get_filestatus(int fd, char *name) </li>
+										<p>参数fd, 文件描述符。</p>
+										<p>参数name, 要查询的文件名。</p>
+										<p>返回 struct file_status,参考sp_fs.h文件 。</p>
+								</ul>
+							<h4>3.2.14.7 查询文件系统状态 </h4>
+								<ul>
+									<li>查询文件系统状态操作接口: struct fs_status  fs_get_status() </li>
+										<p>返回 struct fs_status, 参考sp_fs.h文件 。</p>
+								</ul>
+
+						</div>
+
+					<h3 id="vsoc_device_task">3.2.15 基础任务管理</h3>
+						<div>
+							<p>VSOC提供了最基础的任务管理功能，这些功能可用于RTOS移植。不建议裸C程序直接使用。</p>
+							<h4>3.2.15.1 创建任务</h1>
+								<ul>
+									<li>原型:void *task_create(void (*func)(void *),void *args,int proirity,char *name,void *stack_ptr,unsigned int stack_len,int *err);</li>
+									<li>参数</li>
+										<ul>
+											<li>func: 任务执行函数指针, 任务函数原型为 void func(void *args)</li>
+											<li>args: 任务启动时，该参数将作为函数参数传入</li>
+											<li>priority: 底层任务优先级,建议设置为最低值0</li>
+											<li>name: 任务名称字符串</li>
+											<li>stack_ptr: 任务堆栈指针,若为NULL,则自动分配(stack_len*4)字节堆栈</li>
+											<li>stack_len: 任务堆栈大小,值为(实际堆栈字节数/4),该值需大于256</li>
+											<li>err: 如果创建任务失败，则*err用于保存出错信息。错误信息如下:</li>
+												<ul>
+													<li>0: 没有错误发生, 任务创建成功。其他值表示创建失败</li>
+													<li>-4: 当前环境不支持该操作。例如在中断程序中调用</li>
+													<li>-1: 参数错误。例如堆栈空间小于256</li>
+													<li>-16: 内存不足。</li>
+													<li>-19: 底层创建任务失败</li>
+												</ul>
+										</ul>
+									<li>返回值</li>
+										<ul>
+											<li>NULL: 创建失败</li>
+											<li>非NULL: 任务句柄</li>
+										</ul>
+								</ul>
+								<p>任务创建成功后,不会自动运行。</p>
+							<h4>3.2.15.2 运行任务</h4>
+								<ul>
+									<li>原型: int task_switch(void* handle);</li>
+									<li>参数: handle, 待运行的任务句柄。</li>
+										<p>运行成功后，其他任务停止, 该任务运行。</p>
+									<li>返回值: </li>
+										<ul>
+											<li>0: 运行成功</li>
+											<li>-7: 该任务不存在</li>
+										</ul>
+								</ul>
+							<h4>3.2.15.3 查询当前运行任务</h4>
+								<ul>
+									<li>原型: void *task_get_current_handle(void);</li>
+									<li>参数: 无</li>
+									<li>返回值: 当前运行任务句柄</li>
+								</ul>
+							<h4>3.2.15.4 销毁任务</h4>
+								<ul>
+									<li>原型: int task_kill(void* handle);</li>
+									<li>参数: handle, 待销毁的任务句柄</li>
+									<li>返回值：</li>
+										<ul>
+											<li>0: 销毁成功</li>
+											<li>-22: 当前处于中断程序中,不允许销毁任务</li>
+											<li>-7: 该任务不存在</li>
+										</ul>
+								</ul>
+						</div>
+
+				</div>
+
+		</div> <!-- <div style="margin-left: 320px;padding: 1px 16px;height: 100%;overflow: auto;"> -->
+	</body>
+	<footer style="text-align: center;">
+		<p>Copyright 2021-2023 深圳市磉盘计算机科技有限公司 版权所有</p>
+	</footer>
+</html>

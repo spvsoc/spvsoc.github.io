@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>规格差异</title>
+
+		<style type="text/css">
+		ol {list-style-type: none;}
+		li {margin: 10px 0px;}
+		</style>
+
+	</head>
+	<body>
+		<h1 align="center">有方科技UIS8910平台N58产品VSOC规格差异</h1>
+		<p>OEM厂商在该产品中实现的VSOC规格与VSOC标准规格存在差异，详情如下：</p>
+		<table border="1" cellpadding="10" cellspacing="0">
+			<thead>
+				<tr align="center">
+					<th>序号</th>
+					<th>差异项</th>
+					<th>差异子项</th>
+					<th>差异概述</th>
+					<th>详情</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr align="center">
+					<td>1</td>
+					<td rowspan="2">TIMER</td>
+					<td rowspan="2">工作模式</td>
+					<td align="left">单次模式下定时精度不能达到1uS</td>
+					<td align="left" width="50%">
+						单次模式下，定时时间精确到(1/16384)秒，约为61uS。定时时间小于或等于61uS时，实际定时61uS；定时时间大于61uS时，实际定时以61uS向下取整。<br>
+						例如：定时50uS时，实际定时61uS；定时200uS时，实际定时183uS。计算方法：[向下取整((uS*16384)/1000000) / 16384]秒。
+					</td>
+				</tr>
+				<tr align="center">
+					<td>2</td>
+					<td align="left">循环模式下定时精度不能达到1uS</td>
+					<td align="left" width="50%">
+						循环模式下，定时时间精确到(1/16384)秒，约为61uS。定时时间小于或等于1mS时，实际定时1mS；定时时间大于1mS时，实际定时以61uS向下取整。<br>
+						例如：定时50uS时，实际定时1mS；定时1200uS时，实际定时1159uS。计算方法：[向下取整((uS*16384)/1000000) / 16384]秒。
+					</td>
+				</tr>
+				<tr align="center">
+					<td>3</td>
+					<td>GPIO</td>
+					<td>GPIO功能</td>
+					<td align="left">只支持部分功能模式</td>
+					<td align="left" width="50%">
+						只支持输入和输出两种模式，且初始功能为输入。
+					</td>
+				</tr>
+				<tr align="center">
+					<td>4</td>
+					<td rowspan="2">UART</td>
+					<td>接收和发送缓冲区</td>
+					<td align="left">分别为1152字节</td>
+					<td align="left" width="50%">由两部分组成：驱动缓存1024字节，UART控制器FIFO 128字节。</td>
+				</tr>
+				<tr align="center">
+					<td>5</td>
+					<td>工作模式</td>
+					<td align="left">只支持部分工作模式</td>
+					<td align="left" width="50%">支持8位数据位8N1模式，不支持7位数据位7N1和7O1模式。</td>
+				</tr>
+				<tr align="center">
+					<td>6</td>
+					<td>ADC</td>
+					<td>通道数量</td>
+					<td align="left">少于规格定义</td>
+					<td align="left" width="50%">只支持2个通道。可使用通道[1,2]。注意通道0不可用。</td>
+				</tr>
+				<tr align="center">
+					<td>7</td>
+					<td rowspan="4">PWM</td>
+					<td>通道数量</td>
+					<td align="left">少于规格定义</td>
+					<td align="left" width="50%">只支持3个通道。</td>
+				</tr>
+				<tr align="center">
+					<td>8</td>
+					<!-- <td>PWM</td> -->
+					<td>最大频率</td>
+					<td align="left">低于规格定义</td>
+					<td align="left" width="50%">最大输出频率为8192Hz。</td>
+				</tr>
+				<tr align="center">
+					<td>9</td>
+					<!-- <td>PWM</td> -->
+					<td>占空比</td>
+					<td align="left">与规格定义的占空比电平反相</td>
+					<td align="left" width="50%">实际设置的占空比是低电平占空比。</td>
+				</tr>
+				<tr align="center">
+					<td>10</td>
+					<!-- <td>PWM</td> -->
+					<td>频率和占空比</td>
+					<td align="left">准确性不满足规格定义</td>
+					<td align="left" width="50%">PWM主频是32.768KHz，输出的PWM波形的频率和占空比都是近似值。</td>
+				</tr>
+				<tr align="center">
+					<td>11</td>
+					<td>SPI</td>
+					<td>支持频率范围</td>
+					<td align="left">最小100KHz, 最大50MHz</td>
+					<td align="left" width="50%">小于100KHz取100KHz；<br>大于100KHz, 按照1KHz向下取整; <br>最大可支持到50MHz。</td>
+				</tr>
+				<tr align="center">
+					<td>12</td>
+					<td rowspan="3">RTC</td>
+					<td rowspan="2">RTC时间</td>
+					<td align="left">不包含时区信息</td>
+					<td align="left" width="50%">是UTC时间。</td>
+				</tr>
+				<tr align="center">
+					<td>13</td>
+					<!-- <td>RTC</td> -->
+					<!-- <td>RTC时间</td> -->
+					<td align="left">需判断有效性</td>
+					<td align="left" width="50%"><del>若时间早于2000年1月1日，说明RTC还未从网络获取时间，该时间不可信。</del><p>模块启动时，若RTC时间早于2000.1.1 00:00:00,或晚于2100:1.1 00:00:00, 则判定为模块还未从网络获取到准确时间，模块的RTC时间将被设置为2000.1.1 00:00:01，此后模块将按照该时间进行计时；此后若模块从网络获取到时间，将更新RTC时间为准确时间。</p></td>
+				</tr>
+				<tr align="center">
+					<td>14</td>
+					<!-- <td>RTC</td> -->
+					<td>设置RTC时间</td>
+					<td align="left">不允许设置</td>
+					<td align="left" width="50%">RTC时间自动从网络获取。</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
